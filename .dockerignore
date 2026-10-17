@@ -1,0 +1,11 @@
+node_modules
+.git
+.lovable
+.workspace
+.tanstack
+.env
+.env.*
+dist
+.output
+*.tsbuildinfo
+package-lock.json

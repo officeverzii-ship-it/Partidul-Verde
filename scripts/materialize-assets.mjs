@@ -1,0 +1,5 @@
+import {readdir,readFile,mkdir,writeFile,access} from 'node:fs/promises';
+import path from 'node:path';
+const origin=process.env.ASSET_SOURCE_ORIGIN || 'https://partidulverde.lovable.app';
+async function walk(dir){for(const e of await readdir(dir,{withFileTypes:true})){const file=path.join(dir,e.name);if(e.isDirectory())await walk(file);else if(file.endsWith('.asset.json')){const a=JSON.parse(await readFile(file,'utf8'));if(!a.url?.startsWith('/__l5e/assets-v1/'))continue;const dest=path.join('public',a.url);await mkdir(path.dirname(dest),{recursive:true});try{await access(dest);console.log(`Local asset ${a.original_filename}`);continue;}catch{}const r=await fetch(new URL(a.url,origin));if(!r.ok)throw new Error(`Asset download failed: ${a.original_filename}`);const data=new Uint8Array(await r.arrayBuffer());if(r.headers.get('content-type')?.includes('text/html'))throw new Error(`Invalid asset: ${a.original_filename}`);await writeFile(dest,data);console.log(`Materialized ${a.original_filename}`);}}}
+await walk('src/assets');

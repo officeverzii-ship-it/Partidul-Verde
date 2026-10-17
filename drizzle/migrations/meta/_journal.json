@@ -1,0 +1,20 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1792233199414,
+      "tag": "0000_site_replica_content_and_inbox",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792233518048,
+      "tag": "0001_membership_original_form_fields",
+      "breakpoints": true
+    }
+  ]
+}

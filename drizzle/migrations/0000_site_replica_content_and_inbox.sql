@@ -1,0 +1,17 @@
+CREATE TABLE public.site_pages (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), slug text NOT NULL UNIQUE, title text NOT NULL, content text NOT NULL DEFAULT '', status text NOT NULL DEFAULT 'publicat' CHECK (status IN ('draft','publicat')), created_at timestamptz NOT NULL DEFAULT now());
+GRANT SELECT ON public.site_pages TO anon;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.site_pages TO authenticated;
+GRANT ALL ON public.site_pages TO service_role;
+ALTER TABLE public.site_pages ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public published pages" ON public.site_pages FOR SELECT TO anon, authenticated USING (status = 'publicat');
+CREATE POLICY "Editors manage pages" ON public.site_pages FOR ALL TO authenticated USING (public.has_role(auth.uid(), 'admin_national') OR public.has_role(auth.uid(), 'editor')) WITH CHECK (public.has_role(auth.uid(), 'admin_national') OR public.has_role(auth.uid(), 'editor'));
+CREATE TABLE public.site_submissions (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), kind text NOT NULL CHECK (kind IN ('contact','newsletter')), full_name text NOT NULL CHECK (char_length(full_name) BETWEEN 2 AND 100), email text NOT NULL CHECK (char_length(email) BETWEEN 5 AND 255), message text NOT NULL DEFAULT '' CHECK (char_length(message) <= 2000), consent boolean NOT NULL CHECK (consent = true), status text NOT NULL DEFAULT 'nou' CHECK (status IN ('nou','procesat')), created_at timestamptz NOT NULL DEFAULT now());
+GRANT INSERT ON public.site_submissions TO anon;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.site_submissions TO authenticated;
+GRANT ALL ON public.site_submissions TO service_role;
+ALTER TABLE public.site_submissions ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public submit contact or newsletter" ON public.site_submissions FOR INSERT TO anon, authenticated WITH CHECK (status = 'nou' AND consent = true AND ((kind = 'contact' AND char_length(message) >= 10) OR (kind = 'newsletter' AND message = '')));
+CREATE POLICY "National admins manage submissions" ON public.site_submissions FOR ALL TO authenticated USING (public.has_role(auth.uid(), 'admin_national')) WITH CHECK (public.has_role(auth.uid(), 'admin_national'));
+ALTER TABLE public.articles ADD COLUMN image_url text;
+CREATE OR REPLACE FUNCTION public.validate_site_submission() RETURNS trigger LANGUAGE plpgsql SET search_path = public AS $$ BEGIN IF NEW.email !~ '^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]+$' THEN RAISE EXCEPTION 'Adresa de email nu este valida'; END IF; RETURN NEW; END; $$;
+CREATE TRIGGER validate_site_submission BEFORE INSERT OR UPDATE ON public.site_submissions FOR EACH ROW EXECUTE FUNCTION public.validate_site_submission();
