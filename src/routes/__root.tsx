@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { recoveryFallbackScript } from "../lib/password-recovery";
 
 function NotFoundComponent() {
   return (
@@ -109,6 +110,7 @@ function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="ro">
       <head>
+        <script dangerouslySetInnerHTML={{ __html: recoveryFallbackScript }} />
         <HeadContent />
       </head>
       <body>

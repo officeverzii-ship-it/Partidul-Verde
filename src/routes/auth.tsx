@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Layout } from "@/components/site/Layout";
 import { Field } from "@/components/site/Form";
 import { Button } from "@/components/ui/button";
+import { PASSWORD_RECOVERY_URL } from "@/lib/password-recovery";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -46,7 +47,7 @@ function AuthPage() {
     if (mode === "forgot") {
       try {
         const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-          redirectTo: window.location.origin + "/reset-password",
+          redirectTo: PASSWORD_RECOVERY_URL,
         });
         setMsg(error ? "Linkul nu a putut fi trimis. Încearcă din nou mai târziu." : "Dacă există un cont cu această adresă, vei primi un email cu linkul pentru resetarea parolei. Verifică și folderul Spam.");
       } catch {
