@@ -18,7 +18,7 @@ export const roleLabels: Record<AppRole, string> = {
   voluntar: "Voluntar",
 };
 
-export type Section = "articles" | "members" | "volunteers" | "branches" | "events" | "donations" | "pages" | "submissions";
+export type Section = "articles" | "members" | "volunteers" | "branches" | "events" | "donations" | "pages" | "submissions" | "media" | "settings" | "contacts" | "tasks" | "dues" | "registrations" | "email";
 
 /** Ce roluri văd fiecare secțiune în interfață. Securitatea reală e aplicată în baza de date. */
 export const sectionAccess: Record<Section, AppRole[]> = {
@@ -30,6 +30,13 @@ export const sectionAccess: Record<Section, AppRole[]> = {
   donations: ["admin_national"],
   pages: ["admin_national", "editor"],
   submissions: ["admin_national"],
+  media: ["admin_national", "editor"],
+  settings: ["admin_national", "editor"],
+  contacts: ["admin_national", "admin_filiala"],
+  tasks: ["admin_national", "admin_filiala", "coordonator_voluntari"],
+  dues: ["admin_national", "admin_filiala"],
+  registrations: ["admin_national", "admin_filiala", "editor"],
+  email: ["admin_national", "editor"],
 };
 
 export function useMyRoles() {

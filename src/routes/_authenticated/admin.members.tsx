@@ -1,6 +1,7 @@
 import { pageHead } from '@/lib/seo';
 import { createFileRoute } from "@tanstack/react-router";
 import { CrudPage, useBranchOptions } from "@/components/admin/CrudPage";
+import { ExportButton } from "@/components/admin/ExportButton";
 
 export const Route = createFileRoute("/_authenticated/admin/members")({
   head: () => pageHead('Administrare membri', 'Panoul intern al Partidului Verde.', '/admin/members'),
@@ -15,6 +16,7 @@ function MembersAdmin() {
       table="members"
       section="members"
       searchField="full_name"
+      toolbar={<ExportButton dataset="members" />}
       fields={[
         { name: "full_name", label: "Nume", required: true, inList: true },
         { name: "email", label: "Email", type: "email", required: true, inList: true },

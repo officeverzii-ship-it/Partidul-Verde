@@ -13,5 +13,8 @@
 - Public-site nav/footer config is in `src/data/site.ts`; sample content in `src/data/content.ts`. Why: single editable source for menus.
 
 - Public pages load published database content through shared query options and a public server-function client; never use illustrative arrays for published content. Why: admin edits must be visible publicly under RLS.
+- Public content and public submission handlers create their client through the shared server-only factory; explicit runtime configuration takes precedence, with build-time public configuration used only when absent. Why: self-hosted deployments need consistent configuration without bypassing RLS or silently switching databases on invalid input.
 - Self-hosted Docker builds use Nitro node-server; Lovable retains its managed runtime. Why: Coolify needs a standalone HTTP process with static asset serving.
 - Available imported media is stored in asset pointers, checked for valid binary content, and materialized to public paths for self-hosted builds. Why: exports must serve available media locally and must not treat anti-bot HTML as images.
+- Portalul intern (/portal) este pentru membri aprobați și staff; accesul se decide doar în baza de date prin funcția portal_access(user_id) și politicile RLS ale tabelelor portal_*, internal_events, forum_*, branch_messages. Why: apartenența la partid este dată sensibilă, verificarea în UI nu e suficientă.
+- The branch map uses bundled, simplified geoBoundaries county geometry rendered as SVG, with database branch availability driving selection. Why: accurate boundaries work on every hosting without map credentials or geolocation.

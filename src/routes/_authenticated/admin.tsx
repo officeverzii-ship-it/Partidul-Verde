@@ -28,6 +28,19 @@ const links: { to: string; label: string; section?: Section }[] = [
   { to: "/admin/donations", label: "Donații", section: "donations" },
   { to: "/admin/pages", label: "Pagini", section: "pages" },
   { to: "/admin/submissions", label: "Mesaje și newsletter", section: "submissions" },
+  { to: "/admin/contacts", label: "CRM Contacte", section: "contacts" },
+  { to: "/admin/tasks", label: "Sarcini", section: "tasks" },
+  { to: "/admin/dues", label: "Cotizații", section: "dues" },
+  { to: "/admin/registrations", label: "Înscrieri evenimente", section: "registrations" },
+  { to: "/admin/email-templates", label: "Șabloane email", section: "email" },
+  { to: "/admin/segments", label: "Segmente", section: "email" },
+  { to: "/admin/campaigns", label: "Campanii", section: "email" },
+  { to: "/admin/email-log", label: "Jurnal emailuri", section: "email" },
+  { to: "/admin/email-settings", label: "Setări email", section: "email" },
+  { to: "/admin/media", label: "Bibliotecă media", section: "media" },
+  { to: "/admin/menus", label: "Meniu și footer", section: "settings" },
+  { to: "/admin/settings", label: "Setări site", section: "settings" },
+  { to: "/portal", label: "Portal membri" },
 ];
 
 function AdminLayout() {

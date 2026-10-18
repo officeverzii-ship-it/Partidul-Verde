@@ -1,0 +1,1 @@
+CREATE POLICY "public inserts audit log" ON public.audit_log FOR INSERT TO anon WITH CHECK (user_id IS NULL AND action IN ('email_queued'));

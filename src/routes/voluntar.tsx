@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Layout, PageHeader } from "@/components/site/Layout";
 import { Field, FormStatus, useSiteForm } from "@/components/site/Form";
-import { supabase } from "@/integrations/supabase/client";
 import { useBranchOptions } from "@/components/admin/CrudPage";
+import { useServerFn } from "@tanstack/react-start";
+import { submitVolunteer } from "@/lib/crm.functions";
 
 export const Route = createFileRoute("/voluntar")({
   head: () => ({
@@ -20,12 +21,21 @@ export const Route = createFileRoute("/voluntar")({
 
 function Voluntar() {
   const { data: branches = [] } = useBranchOptions();
-  const f = useSiteForm(["nume", "email", "telefon", "disponibilitate"], async (v) => {
-    const { error } = await supabase.from("volunteers").insert({
-      full_name: v("nume"), email: v("email"), phone: v("telefon"),
-      availability: v("disponibilitate"), branch_id: v("filiala") || null, skills: v("competente") || null,
-    });
-    return error ? "Nu am putut trimite formularul. Încearcă din nou." : null;
+  const sendVolunteer = useServerFn(submitVolunteer);
+  const f = useSiteForm(["nume", "email", "telefon", "disponibilitate", "consimtamant"], async (v) => {
+    if (v("consimtamant") !== "da") return "Trebuie să îți dai acordul pentru prelucrarea datelor.";
+    try {
+      await sendVolunteer({
+        data: {
+          full_name: v("nume"), email: v("email"), phone: v("telefon"),
+          availability: v("disponibilitate"), branch_id: v("filiala") || "", skills: v("competente") || "",
+          gdpr_consent: true,
+        },
+      });
+      return null;
+    } catch {
+      return "Nu am putut trimite formularul. Verifică datele și încearcă din nou.";
+    }
   });
   return (
     <Layout>
@@ -50,6 +60,10 @@ function Voluntar() {
             </Field>
             <Field label="Competențe" full><textarea rows={3} className="field" maxLength={500} onChange={f.set("competente")} /></Field>
           </div>
+          <label className="mt-5 flex items-start gap-3 text-sm text-foreground/70">
+            <input type="checkbox" className="mt-1" onChange={(e) => f.set("consimtamant")({ currentTarget: { value: e.currentTarget.checked ? "da" : "" } })} />
+            <span>Îmi dau acordul ca datele introduse să fie prelucrate de Partidul Verde pentru organizarea activităților de voluntariat, conform <a href="/confidentialitate" className="text-accent underline">Politicii de confidențialitate</a>. *</span>
+          </label>
           <button className="btn-brand mt-6 px-6 py-3">Trimite</button>
           <FormStatus error={f.error} sent={f.sent} message="Mulțumim! Coordonatorul de voluntari te va contacta." />
         </form>

@@ -1,0 +1,6 @@
+import {createFileRoute,Link,notFound} from '@tanstack/react-router';
+import {Layout} from '@/components/site/Layout';
+import {publicContentOptions} from '@/lib/public-content';
+import {pageHead} from '@/lib/seo';
+export const Route=createFileRoute('/evenimente/$id')({loader:async({context,params})=>{const data=await context.queryClient.ensureQueryData(publicContentOptions);const ev=data.events.find(e=>e.id===params.id);if(!ev)throw notFound();return ev;},head:({loaderData})=>pageHead(loaderData?.title??'Eveniment indisponibil',(loaderData?.description??'Eveniment Partidul Verde').slice(0,160),`/evenimente/${loaderData?.id??''}`),component:EventPage});
+function EventPage(){const e=Route.useLoaderData();return <Layout><article className="content-width py-10"><Link to="/evenimente" className="text-sm text-brand">← Înapoi la calendar</Link><p className="mt-5 text-sm text-brand">{new Date(e.starts_at).toLocaleString('ro-RO',{dateStyle:'full',timeStyle:'short'})}</p><h1 className="mt-3 max-w-4xl text-3xl font-bold leading-tight sm:text-4xl">{e.title}</h1>{e.location&&<p className="mt-4 font-semibold">{e.location}</p>}{e.description&&<p className="mt-6 max-w-3xl whitespace-pre-line text-muted-foreground">{e.description}</p>}</article></Layout>}

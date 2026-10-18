@@ -2,10 +2,12 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState, type FormEvent } from "react";
 import { z } from "zod";
+import { EmbeddedCheckoutProvider, EmbeddedCheckout } from "@stripe/react-stripe-js";
 import { Layout } from "@/components/site/Layout";
 import { Field } from "@/components/site/Form";
 import { isAdultCnp, isValidCnp } from "@/lib/cnp";
-import { startDonation } from "@/lib/donations.functions";
+import { createDonationCheckout } from "@/lib/payments.functions";
+import { getStripe, getStripeEnvironment, isTestMode } from "@/lib/stripe";
 
 export const Route = createFileRoute("/doneaza")({
   validateSearch: z.object({ status: z.enum(["succes", "esuat"]).optional() }),
@@ -16,10 +18,10 @@ export const Route = createFileRoute("/doneaza")({
       { title: "Donează — Partidul Verde" },
       {
         name: "description",
-        content: "Susține Partidul Verde printr-o donație securizată cu cardul, conformă Legii 334/2006, procesată de EuPlătesc.ro.",
+        content: "Susține Partidul Verde printr-o donație securizată cu cardul, unică sau lunară, conformă Legii 334/2006.",
       },
       { property: "og:title", content: "Susține viziunea noastră pentru România — Partidul Verde" },
-      { property: "og:description", content: "Donație securizată cu cardul prin EuPlătesc.ro, conformă Legii 334/2006." },
+      { property: "og:description", content: "Donație securizată cu cardul, unică sau lunară, conformă Legii 334/2006." },
     ],
   }),
   component: Doneaza,
@@ -46,20 +48,33 @@ function CardLogo({ label }: { label: string }) {
   );
 }
 
+function TestModeBanner() {
+  if (!isTestMode()) return null;
+  return (
+    <div className="w-full border-b border-amber-300/40 bg-amber-100 px-4 py-2 text-center text-sm text-amber-900">
+      Plățile din această versiune sunt în mod de test — nu se debitează bani reali.
+    </div>
+  );
+}
+
 function Doneaza() {
   const { status } = Route.useSearch();
-  const start = useServerFn(startDonation);
+  const start = useServerFn(createDonationCheckout);
   const [preset, setPreset] = useState<number | null>(100);
   const [custom, setCustom] = useState("");
+  const [donationType, setDonationType] = useState<"unic" | "lunar">("unic");
   const [v, setV] = useState<Record<string, string>>({});
   const [citizenship, setCitizenship] = useState(false);
   const [terms, setTerms] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
 
   const amount = custom ? Number(custom.replace(",", ".")) : preset ?? 0;
-  const set = (k: string) => (e: { currentTarget: { value: string } }) =>
-    setV((s) => ({ ...s, [k]: e.currentTarget.value }));
+  const set = (k: string) => (e: { currentTarget: { value: string } }) => {
+    const value = e.currentTarget.value;
+    setV((s) => ({ ...s, [k]: value }));
+  };
   const val = (k: string) => (v[k] ?? "").trim();
 
   const submit = async (e: FormEvent) => {
@@ -80,6 +95,7 @@ function Doneaza() {
       const res = await start({
         data: {
           amount: Math.round(amount * 100) / 100,
+          donationType,
           fullName: val("fullName"),
           cnp: val("cnp"),
           street: val("street"),
@@ -89,33 +105,25 @@ function Doneaza() {
           phone: val("phone"),
           citizenship: true,
           terms: true,
+          environment: getStripeEnvironment(),
         },
       });
-      if (!res.ok) {
+      if ("error" in res) {
         setError(res.error);
         setBusy(false);
         return;
       }
-      const form = document.createElement("form");
-      form.method = "POST";
-      form.action = res.action;
-      for (const [name, value] of Object.entries(res.fields)) {
-        const input = document.createElement("input");
-        input.type = "hidden";
-        input.name = name;
-        input.value = value;
-        form.appendChild(input);
-      }
-      document.body.appendChild(form);
-      form.submit();
-    } catch {
-      setError("Datele nu au putut fi validate. Verifică formularul.");
+      setClientSecret(res.clientSecret);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Datele nu au putut fi validate. Verifică formularul.");
+    } finally {
       setBusy(false);
     }
   };
 
   return (
     <Layout>
+      <TestModeBanner />
       <section className="mx-auto max-w-3xl px-6 pt-14 pb-6 text-center">
         <h1 className="font-display text-4xl font-bold leading-[1.05] sm:text-5xl">
           Susține viziunea noastră <span className="text-brand">pentru România</span>
@@ -124,7 +132,8 @@ function Doneaza() {
           Fiecare donație finanțează campanii pentru aer curat, energie verde și comunități implicate. Transparent și legal.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-3">
-          <Badge>Plăți securizate EuPlătesc.ro</Badge>
+          <Badge>Plăți securizate cu cardul</Badge>
+          <Badge>Donație unică sau lunară</Badge>
           <Badge>Conform Legii 334/2006</Badge>
         </div>
       </section>
@@ -140,9 +149,32 @@ function Doneaza() {
       )}
 
       <section className="mx-auto max-w-3xl px-6 py-8">
+        {clientSecret ? (
+          <div className="glass rounded-3xl p-4 sm:p-6">
+            <EmbeddedCheckoutProvider stripe={getStripe()} options={{ clientSecret }}>
+              <EmbeddedCheckout />
+            </EmbeddedCheckoutProvider>
+          </div>
+        ) : (
         <form onSubmit={submit} className="glass space-y-8 rounded-3xl p-6 sm:p-8" noValidate>
           <div>
-            <h2 className="font-display text-xl font-semibold">1. Alege suma</h2>
+            <h2 className="font-display text-xl font-semibold">1. Alege tipul și suma</h2>
+            <div className="mt-4 grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => setDonationType("unic")}
+                className={donationType === "unic" ? "btn-brand py-3" : "glass rounded-xl py-3 font-semibold"}
+              >
+                Donație unică
+              </button>
+              <button
+                type="button"
+                onClick={() => setDonationType("lunar")}
+                className={donationType === "lunar" ? "btn-brand py-3" : "glass rounded-xl py-3 font-semibold"}
+              >
+                Donație lunară
+              </button>
+            </div>
             <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
               {presets.map((p) => (
                 <button
@@ -167,6 +199,11 @@ function Doneaza() {
                 />
               </Field>
             </div>
+            {donationType === "lunar" && (
+              <p className="mt-3 rounded-xl border border-accent/30 bg-accent/10 px-4 py-3 text-sm text-foreground/80">
+                Suma aleasă va fi donată automat în fiecare lună. Poți anula oricând scriindu-ne pe email.
+              </p>
+            )}
           </div>
 
           <div>
@@ -178,7 +215,7 @@ function Doneaza() {
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
               <Field label="Nume complet" full><input className="field" maxLength={100} autoComplete="name" onChange={set("fullName")} /></Field>
               <Field label="CNP">
-                <input className="field" inputMode="numeric" maxLength={13} value={v["cnp"] ?? ""} onChange={(e) => setV((s) => ({ ...s, cnp: e.currentTarget.value.replace(/\D/g, "") }))} />
+                <input className="field" inputMode="numeric" maxLength={13} value={v["cnp"] ?? ""} onChange={(e) => { const cnp = e.currentTarget.value.replace(/\D/g, ""); setV((s) => ({ ...s, cnp })); }} />
               </Field>
               <Field label="Telefon"><input type="tel" className="field" maxLength={20} autoComplete="tel" onChange={set("phone")} /></Field>
               <Field label="Stradă, număr, bloc, apartament" full><input className="field" maxLength={200} autoComplete="street-address" onChange={set("street")} /></Field>
@@ -209,21 +246,21 @@ function Doneaza() {
 
           <div className="text-center">
             <button disabled={busy} className="btn-brand w-full py-4 text-lg disabled:opacity-60">
-              {busy ? "Se pregătește plata…" : `Donează în siguranță cu cardul${amount >= 10 ? ` · ${amount} RON` : ""}`}
+              {busy ? "Se pregătește plata…" : `Donează în siguranță cu cardul${amount >= 10 ? ` · ${amount} RON${donationType === "lunar" ? "/lună" : ""}` : ""}`}
             </button>
             <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
               <CardLogo label="VISA" />
               <CardLogo label="Mastercard" />
-              <CardLogo label="EuPlătesc.ro" />
             </div>
           </div>
 
           <p className="text-center text-xs leading-relaxed text-foreground/55">
-            Datele cardului sunt introduse și procesate exclusiv pe pagina securizată EuPlătesc.ro, cu autentificare
+            Datele cardului sunt introduse și procesate exclusiv de procesatorul de plăți securizat, cu autentificare
             3D Secure. Partidul Verde nu primește și nu stochează datele cardului tău. Comision suplimentar pentru
             donator: 0%.
           </p>
         </form>
+        )}
       </section>
     </Layout>
   );

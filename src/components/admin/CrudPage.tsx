@@ -9,7 +9,7 @@ type Row = Record<string, unknown> & { id: string };
 export type FieldDef = {
   name: string;
   label: string;
-  type?: "text" | "email" | "number" | "date" | "datetime-local" | "textarea" | "select";
+  type?: "text" | "email" | "number" | "date" | "datetime-local" | "textarea" | "select" | "tags";
   options?: { value: string; label: string }[];
   required?: boolean;
   inList?: boolean;
@@ -35,14 +35,16 @@ export function CrudPage({
   orderBy = "created_at",
   searchField,
   canCreate = true,
+  toolbar,
 }: {
   title: string;
-  table: "articles" | "members" | "volunteers" | "branches" | "events" | "donations" | "site_pages" | "site_submissions";
+  table: "articles" | "members" | "volunteers" | "branches" | "events" | "donations" | "site_pages" | "site_submissions" | "contacts" | "tasks" | "dues" | "event_registrations" | "email_templates" | "email_segments" | "email_campaigns" | "email_messages" | "email_suppressions";
   section: Section;
   fields: FieldDef[];
   orderBy?: string;
   searchField: string;
   canCreate?: boolean;
+  toolbar?: React.ReactNode;
 }) {
   const qc = useQueryClient();
   const { data: me, isLoading: rolesLoading } = useMyRoles();
@@ -103,7 +105,7 @@ export function CrudPage({
       const raw = String(fd.get(f.name) ?? "").trim();
       if (f.required && !raw) return setErr(`Câmpul „${f.label}” este obligatoriu.`);
       if (f.type === "email" && raw && !/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(raw)) return setErr("Email invalid.");
-      values[f.name] = raw === "" ? null : f.type === "number" ? Number(raw) : f.type === "datetime-local" ? new Date(raw).toISOString() : raw;
+      values[f.name] = raw === "" ? (f.type === "tags" ? [] : null) : f.type === "number" ? Number(raw) : f.type === "datetime-local" ? new Date(raw).toISOString() : f.type === "tags" ? raw.split(",").map((t) => t.trim()).filter(Boolean) : raw;
     }
     save.mutate(values);
   };
@@ -115,6 +117,7 @@ export function CrudPage({
     if (v == null) return "—";
     if (f.type === "select") return f.options?.find((o) => o.value === v)?.label ?? String(v);
     if (f.type === "datetime-local" || f.type === "date") return new Date(String(v)).toLocaleDateString("ro-RO");
+    if (f.type === "tags" && Array.isArray(v)) return v.join(", ");
     return String(v);
   };
 
@@ -122,9 +125,12 @@ export function CrudPage({
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-display text-3xl font-bold">{title}</h1>
-        {canCreate && (
-          <Button onClick={() => { setErr(null); setEditing("new"); }} className="btn-brand px-4 py-2 text-sm">+ Adaugă</Button>
-        )}
+        <div className="flex items-center gap-2">
+          {toolbar}
+          {canCreate && (
+            <Button onClick={() => { setErr(null); setEditing("new"); }} className="btn-brand px-4 py-2 text-sm">+ Adaugă</Button>
+          )}
+        </div>
       </div>
 
       <div className="mt-5 flex flex-wrap gap-3">
@@ -137,7 +143,7 @@ export function CrudPage({
           {fields.map((f) => {
             const dv = current?.[f.name];
             const defaultValue =
-              dv == null ? "" : f.type === "datetime-local" ? new Date(String(dv)).toISOString().slice(0, 16) : String(dv);
+              dv == null ? "" : f.type === "datetime-local" ? new Date(String(dv)).toISOString().slice(0, 16) : f.type === "tags" && Array.isArray(dv) ? dv.join(", ") : String(dv);
             return (
               <label key={f.name} className={f.type === "textarea" ? "block sm:col-span-2" : "block"}>
                 <span className="mb-1.5 block text-xs uppercase tracking-wider text-foreground/50">{f.label}{f.required && " *"}</span>

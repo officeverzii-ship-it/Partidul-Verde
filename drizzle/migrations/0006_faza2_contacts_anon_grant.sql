@@ -1,0 +1,1 @@
+GRANT INSERT, UPDATE ON public.contacts TO anon;

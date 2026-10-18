@@ -9,19 +9,20 @@ export const Route = createFileRoute("/_authenticated/admin/")({
   component: Dashboard,
 });
 
-const cards: { table: Exclude<Section,"pages"|"submissions">; label: string; to: string }[] = [
-  { table: "members", label: "Membri", to: "/admin/members" },
-  { table: "volunteers", label: "Voluntari", to: "/admin/volunteers" },
-  { table: "branches", label: "Filiale", to: "/admin/branches" },
-  { table: "articles", label: "Articole", to: "/admin/articles" },
-  { table: "events", label: "Evenimente", to: "/admin/events" },
-  { table: "donations", label: "Donații", to: "/admin/donations" },
+const cards: { table: "members" | "volunteers" | "branches" | "articles" | "events" | "donations"; section: Section; label: string; to: string }[] = [
+  { table: "members", section: "members", label: "Membri", to: "/admin/members" },
+  { table: "volunteers", section: "volunteers", label: "Voluntari", to: "/admin/volunteers" },
+  { table: "branches", section: "branches", label: "Filiale", to: "/admin/branches" },
+  { table: "articles", section: "articles", label: "Articole", to: "/admin/articles" },
+  { table: "events", section: "events", label: "Evenimente", to: "/admin/events" },
+  { table: "donations", section: "donations", label: "Donații", to: "/admin/donations" },
 ];
+void 0;
 
 function Dashboard() {
   const { data: me } = useMyRoles();
   const roles = me?.roles ?? [];
-  const visible = cards.filter((c) => canAccess(roles, c.table));
+  const visible = cards.filter((c) => canAccess(roles, c.section));
 
   const stats = useQuery({
     queryKey: ["dashboard", roles.join(",")],

@@ -13,8 +13,11 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ConfidentialitateRouteImport } from './routes/confidentialitate'
+import { Route as ConfirmareEmailRouteImport } from './routes/confirmare-email'
+import { Route as ConfirmareNewsletterRouteImport } from './routes/confirmare-newsletter'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DespreRouteImport } from './routes/despre'
+import { Route as DezabonareRouteImport } from './routes/dezabonare'
 import { Route as DoneazaRouteImport } from './routes/doneaza'
 import { Route as EchipaRouteImport } from './routes/echipa'
 import { Route as EvenimenteRouteImport } from './routes/evenimente'
@@ -25,27 +28,51 @@ import { Route as MediaRouteImport } from './routes/media'
 import { Route as MembruRouteImport } from './routes/membru'
 import { Route as MisiuneRouteImport } from './routes/misiune'
 import { Route as Newsletter2RouteImport } from './routes/newsletter-2'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TermeniSiConditiiRouteImport } from './routes/termeni-si-conditii'
 import { Route as ViziuneRouteImport } from './routes/viziune'
 import { Route as VoluntarRouteImport } from './routes/voluntar'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedDonatiileMeleRouteImport } from './routes/_authenticated/donatiile-mele'
+import { Route as AuthenticatedPortalRouteImport } from './routes/_authenticated/portal'
 import { Route as ArticoleIndexRouteImport } from './routes/articole.index'
 import { Route as ArticoleSlugRouteImport } from './routes/articole.$slug'
 import { Route as ComunicateIndexRouteImport } from './routes/comunicate.index'
 import { Route as ComunicateSlugRouteImport } from './routes/comunicate.$slug'
 import { Route as DespreNoiSlugRouteImport } from './routes/despre-noi.$slug'
+import { Route as EvenimenteIdRouteImport } from './routes/evenimente.$id'
 import { Route as ViziuneIndexRouteImport } from './routes/viziune.index'
 import { Route as ViziuneSlugRouteImport } from './routes/viziune.$slug'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminArticlesRouteImport } from './routes/_authenticated/admin.articles'
 import { Route as AuthenticatedAdminBranchesRouteImport } from './routes/_authenticated/admin.branches'
+import { Route as AuthenticatedAdminCampaignsRouteImport } from './routes/_authenticated/admin.campaigns'
+import { Route as AuthenticatedAdminContactsRouteImport } from './routes/_authenticated/admin.contacts'
 import { Route as AuthenticatedAdminDonationsRouteImport } from './routes/_authenticated/admin.donations'
+import { Route as AuthenticatedAdminDuesRouteImport } from './routes/_authenticated/admin.dues'
+import { Route as AuthenticatedAdminEmailLogRouteImport } from './routes/_authenticated/admin.email-log'
+import { Route as AuthenticatedAdminEmailSettingsRouteImport } from './routes/_authenticated/admin.email-settings'
+import { Route as AuthenticatedAdminEmailTemplatesRouteImport } from './routes/_authenticated/admin.email-templates'
 import { Route as AuthenticatedAdminEventsRouteImport } from './routes/_authenticated/admin.events'
+import { Route as AuthenticatedAdminMediaRouteImport } from './routes/_authenticated/admin.media'
 import { Route as AuthenticatedAdminMembersRouteImport } from './routes/_authenticated/admin.members'
+import { Route as AuthenticatedAdminMenusRouteImport } from './routes/_authenticated/admin.menus'
 import { Route as AuthenticatedAdminPagesRouteImport } from './routes/_authenticated/admin.pages'
+import { Route as AuthenticatedAdminRegistrationsRouteImport } from './routes/_authenticated/admin.registrations'
+import { Route as AuthenticatedAdminSegmentsRouteImport } from './routes/_authenticated/admin.segments'
+import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin.settings'
 import { Route as AuthenticatedAdminSubmissionsRouteImport } from './routes/_authenticated/admin.submissions'
+import { Route as AuthenticatedAdminTasksRouteImport } from './routes/_authenticated/admin.tasks'
 import { Route as AuthenticatedAdminVolunteersRouteImport } from './routes/_authenticated/admin.volunteers'
+import { Route as AuthenticatedPortalIndexRouteImport } from './routes/_authenticated/portal.index'
+import { Route as AuthenticatedPortalCalendarRouteImport } from './routes/_authenticated/portal.calendar'
+import { Route as AuthenticatedPortalDocumenteRouteImport } from './routes/_authenticated/portal.documente'
+import { Route as AuthenticatedPortalForumRouteImport } from './routes/_authenticated/portal.forum'
+import { Route as AuthenticatedPortalMesagerieRouteImport } from './routes/_authenticated/portal.mesagerie'
+import { Route as AuthenticatedPortalForumThreadIdRouteImport } from './routes/_authenticated/portal.forum.$threadId'
 import { Route as ApiPublicEuplatescCallbackRouteImport } from './routes/api/public/euplatesc/callback'
+import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
+import { Route as ApiPublicResendWebhookRouteImport } from './routes/api/public/resend/webhook'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -66,6 +93,16 @@ const ConfidentialitateRoute = ConfidentialitateRouteImport.update({
   path: '/confidentialitate',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ConfirmareEmailRoute = ConfirmareEmailRouteImport.update({
+  id: '/confirmare-email',
+  path: '/confirmare-email',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConfirmareNewsletterRoute = ConfirmareNewsletterRouteImport.update({
+  id: '/confirmare-newsletter',
+  path: '/confirmare-newsletter',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
@@ -74,6 +111,11 @@ const ContactRoute = ContactRouteImport.update({
 const DespreRoute = DespreRouteImport.update({
   id: '/despre',
   path: '/despre',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DezabonareRoute = DezabonareRouteImport.update({
+  id: '/dezabonare',
+  path: '/dezabonare',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DoneazaRoute = DoneazaRouteImport.update({
@@ -126,6 +168,11 @@ const Newsletter2Route = Newsletter2RouteImport.update({
   path: '/newsletter-2',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TermeniSiConditiiRoute = TermeniSiConditiiRouteImport.update({
   id: '/termeni-si-conditii',
   path: '/termeni-si-conditii',
@@ -144,6 +191,17 @@ const VoluntarRoute = VoluntarRouteImport.update({
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDonatiileMeleRoute =
+  AuthenticatedDonatiileMeleRouteImport.update({
+    id: '/donatiile-mele',
+    path: '/donatiile-mele',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPortalRoute = AuthenticatedPortalRouteImport.update({
+  id: '/portal',
+  path: '/portal',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const ArticoleIndexRoute = ArticoleIndexRouteImport.update({
@@ -170,6 +228,11 @@ const DespreNoiSlugRoute = DespreNoiSlugRouteImport.update({
   id: '/despre-noi/$slug',
   path: '/despre-noi/$slug',
   getParentRoute: () => rootRouteImport,
+} as any)
+const EvenimenteIdRoute = EvenimenteIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => EvenimenteRoute,
 } as any)
 const ViziuneIndexRoute = ViziuneIndexRouteImport.update({
   id: '/',
@@ -198,10 +261,45 @@ const AuthenticatedAdminBranchesRoute =
     path: '/branches',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminCampaignsRoute =
+  AuthenticatedAdminCampaignsRouteImport.update({
+    id: '/campaigns',
+    path: '/campaigns',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminContactsRoute =
+  AuthenticatedAdminContactsRouteImport.update({
+    id: '/contacts',
+    path: '/contacts',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminDonationsRoute =
   AuthenticatedAdminDonationsRouteImport.update({
     id: '/donations',
     path: '/donations',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminDuesRoute = AuthenticatedAdminDuesRouteImport.update({
+  id: '/dues',
+  path: '/dues',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
+const AuthenticatedAdminEmailLogRoute =
+  AuthenticatedAdminEmailLogRouteImport.update({
+    id: '/email-log',
+    path: '/email-log',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminEmailSettingsRoute =
+  AuthenticatedAdminEmailSettingsRouteImport.update({
+    id: '/email-settings',
+    path: '/email-settings',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminEmailTemplatesRoute =
+  AuthenticatedAdminEmailTemplatesRouteImport.update({
+    id: '/email-templates',
+    path: '/email-templates',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
 const AuthenticatedAdminEventsRoute =
@@ -210,28 +308,97 @@ const AuthenticatedAdminEventsRoute =
     path: '/events',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminMediaRoute = AuthenticatedAdminMediaRouteImport.update({
+  id: '/media',
+  path: '/media',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
 const AuthenticatedAdminMembersRoute =
   AuthenticatedAdminMembersRouteImport.update({
     id: '/members',
     path: '/members',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminMenusRoute = AuthenticatedAdminMenusRouteImport.update({
+  id: '/menus',
+  path: '/menus',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
 const AuthenticatedAdminPagesRoute = AuthenticatedAdminPagesRouteImport.update({
   id: '/pages',
   path: '/pages',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedAdminRegistrationsRoute =
+  AuthenticatedAdminRegistrationsRouteImport.update({
+    id: '/registrations',
+    path: '/registrations',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminSegmentsRoute =
+  AuthenticatedAdminSegmentsRouteImport.update({
+    id: '/segments',
+    path: '/segments',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminSettingsRoute =
+  AuthenticatedAdminSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminSubmissionsRoute =
   AuthenticatedAdminSubmissionsRouteImport.update({
     id: '/submissions',
     path: '/submissions',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminTasksRoute = AuthenticatedAdminTasksRouteImport.update({
+  id: '/tasks',
+  path: '/tasks',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
 const AuthenticatedAdminVolunteersRoute =
   AuthenticatedAdminVolunteersRouteImport.update({
     id: '/volunteers',
     path: '/volunteers',
     getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedPortalIndexRoute =
+  AuthenticatedPortalIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalCalendarRoute =
+  AuthenticatedPortalCalendarRouteImport.update({
+    id: '/calendar',
+    path: '/calendar',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalDocumenteRoute =
+  AuthenticatedPortalDocumenteRouteImport.update({
+    id: '/documente',
+    path: '/documente',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalForumRoute =
+  AuthenticatedPortalForumRouteImport.update({
+    id: '/forum',
+    path: '/forum',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalMesagerieRoute =
+  AuthenticatedPortalMesagerieRouteImport.update({
+    id: '/mesagerie',
+    path: '/mesagerie',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalForumThreadIdRoute =
+  AuthenticatedPortalForumThreadIdRouteImport.update({
+    id: '/$threadId',
+    path: '/$threadId',
+    getParentRoute: () => AuthenticatedPortalForumRoute,
   } as any)
 const ApiPublicEuplatescCallbackRoute =
   ApiPublicEuplatescCallbackRouteImport.update({
@@ -239,16 +406,30 @@ const ApiPublicEuplatescCallbackRoute =
     path: '/api/public/euplatesc/callback',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicPaymentsWebhookRoute =
+  ApiPublicPaymentsWebhookRouteImport.update({
+    id: '/api/public/payments/webhook',
+    path: '/api/public/payments/webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicResendWebhookRoute = ApiPublicResendWebhookRouteImport.update({
+  id: '/api/public/resend/webhook',
+  path: '/api/public/resend/webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/confidentialitate': typeof ConfidentialitateRoute
+  '/confirmare-email': typeof ConfirmareEmailRoute
+  '/confirmare-newsletter': typeof ConfirmareNewsletterRoute
   '/contact': typeof ContactRoute
   '/despre': typeof DespreRoute
+  '/dezabonare': typeof DezabonareRoute
   '/doneaza': typeof DoneazaRoute
   '/echipa': typeof EchipaRoute
-  '/evenimente': typeof EvenimenteRoute
+  '/evenimente': typeof EvenimenteRouteWithChildren
   '/filiale': typeof FilialeRoute
   '/impressum': typeof ImpressumRoute
   '/inscriere': typeof InscriereRoute
@@ -256,37 +437,64 @@ export interface FileRoutesByFullPath {
   '/membru': typeof MembruRoute
   '/misiune': typeof MisiuneRoute
   '/newsletter-2': typeof Newsletter2Route
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termeni-si-conditii': typeof TermeniSiConditiiRoute
   '/viziune': typeof ViziuneRouteWithChildren
   '/voluntar': typeof VoluntarRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/donatiile-mele': typeof AuthenticatedDonatiileMeleRoute
+  '/portal': typeof AuthenticatedPortalRouteWithChildren
   '/articole/$slug': typeof ArticoleSlugRoute
   '/comunicate/$slug': typeof ComunicateSlugRoute
   '/despre-noi/$slug': typeof DespreNoiSlugRoute
+  '/evenimente/$id': typeof EvenimenteIdRoute
   '/viziune/$slug': typeof ViziuneSlugRoute
   '/articole/': typeof ArticoleIndexRoute
   '/comunicate/': typeof ComunicateIndexRoute
   '/viziune/': typeof ViziuneIndexRoute
   '/admin/articles': typeof AuthenticatedAdminArticlesRoute
   '/admin/branches': typeof AuthenticatedAdminBranchesRoute
+  '/admin/campaigns': typeof AuthenticatedAdminCampaignsRoute
+  '/admin/contacts': typeof AuthenticatedAdminContactsRoute
   '/admin/donations': typeof AuthenticatedAdminDonationsRoute
+  '/admin/dues': typeof AuthenticatedAdminDuesRoute
+  '/admin/email-log': typeof AuthenticatedAdminEmailLogRoute
+  '/admin/email-settings': typeof AuthenticatedAdminEmailSettingsRoute
+  '/admin/email-templates': typeof AuthenticatedAdminEmailTemplatesRoute
   '/admin/events': typeof AuthenticatedAdminEventsRoute
+  '/admin/media': typeof AuthenticatedAdminMediaRoute
   '/admin/members': typeof AuthenticatedAdminMembersRoute
+  '/admin/menus': typeof AuthenticatedAdminMenusRoute
   '/admin/pages': typeof AuthenticatedAdminPagesRoute
+  '/admin/registrations': typeof AuthenticatedAdminRegistrationsRoute
+  '/admin/segments': typeof AuthenticatedAdminSegmentsRoute
+  '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/submissions': typeof AuthenticatedAdminSubmissionsRoute
+  '/admin/tasks': typeof AuthenticatedAdminTasksRoute
   '/admin/volunteers': typeof AuthenticatedAdminVolunteersRoute
+  '/portal/calendar': typeof AuthenticatedPortalCalendarRoute
+  '/portal/documente': typeof AuthenticatedPortalDocumenteRoute
+  '/portal/forum': typeof AuthenticatedPortalForumRouteWithChildren
+  '/portal/mesagerie': typeof AuthenticatedPortalMesagerieRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/portal/': typeof AuthenticatedPortalIndexRoute
+  '/portal/forum/$threadId': typeof AuthenticatedPortalForumThreadIdRoute
   '/api/public/euplatesc/callback': typeof ApiPublicEuplatescCallbackRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
+  '/api/public/resend/webhook': typeof ApiPublicResendWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/confidentialitate': typeof ConfidentialitateRoute
+  '/confirmare-email': typeof ConfirmareEmailRoute
+  '/confirmare-newsletter': typeof ConfirmareNewsletterRoute
   '/contact': typeof ContactRoute
   '/despre': typeof DespreRoute
+  '/dezabonare': typeof DezabonareRoute
   '/doneaza': typeof DoneazaRoute
   '/echipa': typeof EchipaRoute
-  '/evenimente': typeof EvenimenteRoute
+  '/evenimente': typeof EvenimenteRouteWithChildren
   '/filiale': typeof FilialeRoute
   '/impressum': typeof ImpressumRoute
   '/inscriere': typeof InscriereRoute
@@ -294,25 +502,48 @@ export interface FileRoutesByTo {
   '/membru': typeof MembruRoute
   '/misiune': typeof MisiuneRoute
   '/newsletter-2': typeof Newsletter2Route
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termeni-si-conditii': typeof TermeniSiConditiiRoute
   '/voluntar': typeof VoluntarRoute
+  '/donatiile-mele': typeof AuthenticatedDonatiileMeleRoute
   '/articole/$slug': typeof ArticoleSlugRoute
   '/comunicate/$slug': typeof ComunicateSlugRoute
   '/despre-noi/$slug': typeof DespreNoiSlugRoute
+  '/evenimente/$id': typeof EvenimenteIdRoute
   '/viziune/$slug': typeof ViziuneSlugRoute
   '/articole': typeof ArticoleIndexRoute
   '/comunicate': typeof ComunicateIndexRoute
   '/viziune': typeof ViziuneIndexRoute
   '/admin/articles': typeof AuthenticatedAdminArticlesRoute
   '/admin/branches': typeof AuthenticatedAdminBranchesRoute
+  '/admin/campaigns': typeof AuthenticatedAdminCampaignsRoute
+  '/admin/contacts': typeof AuthenticatedAdminContactsRoute
   '/admin/donations': typeof AuthenticatedAdminDonationsRoute
+  '/admin/dues': typeof AuthenticatedAdminDuesRoute
+  '/admin/email-log': typeof AuthenticatedAdminEmailLogRoute
+  '/admin/email-settings': typeof AuthenticatedAdminEmailSettingsRoute
+  '/admin/email-templates': typeof AuthenticatedAdminEmailTemplatesRoute
   '/admin/events': typeof AuthenticatedAdminEventsRoute
+  '/admin/media': typeof AuthenticatedAdminMediaRoute
   '/admin/members': typeof AuthenticatedAdminMembersRoute
+  '/admin/menus': typeof AuthenticatedAdminMenusRoute
   '/admin/pages': typeof AuthenticatedAdminPagesRoute
+  '/admin/registrations': typeof AuthenticatedAdminRegistrationsRoute
+  '/admin/segments': typeof AuthenticatedAdminSegmentsRoute
+  '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/submissions': typeof AuthenticatedAdminSubmissionsRoute
+  '/admin/tasks': typeof AuthenticatedAdminTasksRoute
   '/admin/volunteers': typeof AuthenticatedAdminVolunteersRoute
+  '/portal/calendar': typeof AuthenticatedPortalCalendarRoute
+  '/portal/documente': typeof AuthenticatedPortalDocumenteRoute
+  '/portal/forum': typeof AuthenticatedPortalForumRouteWithChildren
+  '/portal/mesagerie': typeof AuthenticatedPortalMesagerieRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/portal': typeof AuthenticatedPortalIndexRoute
+  '/portal/forum/$threadId': typeof AuthenticatedPortalForumThreadIdRoute
   '/api/public/euplatesc/callback': typeof ApiPublicEuplatescCallbackRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
+  '/api/public/resend/webhook': typeof ApiPublicResendWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -320,11 +551,14 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/confidentialitate': typeof ConfidentialitateRoute
+  '/confirmare-email': typeof ConfirmareEmailRoute
+  '/confirmare-newsletter': typeof ConfirmareNewsletterRoute
   '/contact': typeof ContactRoute
   '/despre': typeof DespreRoute
+  '/dezabonare': typeof DezabonareRoute
   '/doneaza': typeof DoneazaRoute
   '/echipa': typeof EchipaRoute
-  '/evenimente': typeof EvenimenteRoute
+  '/evenimente': typeof EvenimenteRouteWithChildren
   '/filiale': typeof FilialeRoute
   '/impressum': typeof ImpressumRoute
   '/inscriere': typeof InscriereRoute
@@ -332,27 +566,51 @@ export interface FileRoutesById {
   '/membru': typeof MembruRoute
   '/misiune': typeof MisiuneRoute
   '/newsletter-2': typeof Newsletter2Route
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termeni-si-conditii': typeof TermeniSiConditiiRoute
   '/viziune': typeof ViziuneRouteWithChildren
   '/voluntar': typeof VoluntarRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/_authenticated/donatiile-mele': typeof AuthenticatedDonatiileMeleRoute
+  '/_authenticated/portal': typeof AuthenticatedPortalRouteWithChildren
   '/articole/$slug': typeof ArticoleSlugRoute
   '/comunicate/$slug': typeof ComunicateSlugRoute
   '/despre-noi/$slug': typeof DespreNoiSlugRoute
+  '/evenimente/$id': typeof EvenimenteIdRoute
   '/viziune/$slug': typeof ViziuneSlugRoute
   '/articole/': typeof ArticoleIndexRoute
   '/comunicate/': typeof ComunicateIndexRoute
   '/viziune/': typeof ViziuneIndexRoute
   '/_authenticated/admin/articles': typeof AuthenticatedAdminArticlesRoute
   '/_authenticated/admin/branches': typeof AuthenticatedAdminBranchesRoute
+  '/_authenticated/admin/campaigns': typeof AuthenticatedAdminCampaignsRoute
+  '/_authenticated/admin/contacts': typeof AuthenticatedAdminContactsRoute
   '/_authenticated/admin/donations': typeof AuthenticatedAdminDonationsRoute
+  '/_authenticated/admin/dues': typeof AuthenticatedAdminDuesRoute
+  '/_authenticated/admin/email-log': typeof AuthenticatedAdminEmailLogRoute
+  '/_authenticated/admin/email-settings': typeof AuthenticatedAdminEmailSettingsRoute
+  '/_authenticated/admin/email-templates': typeof AuthenticatedAdminEmailTemplatesRoute
   '/_authenticated/admin/events': typeof AuthenticatedAdminEventsRoute
+  '/_authenticated/admin/media': typeof AuthenticatedAdminMediaRoute
   '/_authenticated/admin/members': typeof AuthenticatedAdminMembersRoute
+  '/_authenticated/admin/menus': typeof AuthenticatedAdminMenusRoute
   '/_authenticated/admin/pages': typeof AuthenticatedAdminPagesRoute
+  '/_authenticated/admin/registrations': typeof AuthenticatedAdminRegistrationsRoute
+  '/_authenticated/admin/segments': typeof AuthenticatedAdminSegmentsRoute
+  '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/_authenticated/admin/submissions': typeof AuthenticatedAdminSubmissionsRoute
+  '/_authenticated/admin/tasks': typeof AuthenticatedAdminTasksRoute
   '/_authenticated/admin/volunteers': typeof AuthenticatedAdminVolunteersRoute
+  '/_authenticated/portal/calendar': typeof AuthenticatedPortalCalendarRoute
+  '/_authenticated/portal/documente': typeof AuthenticatedPortalDocumenteRoute
+  '/_authenticated/portal/forum': typeof AuthenticatedPortalForumRouteWithChildren
+  '/_authenticated/portal/mesagerie': typeof AuthenticatedPortalMesagerieRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/portal/': typeof AuthenticatedPortalIndexRoute
+  '/_authenticated/portal/forum/$threadId': typeof AuthenticatedPortalForumThreadIdRoute
   '/api/public/euplatesc/callback': typeof ApiPublicEuplatescCallbackRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
+  '/api/public/resend/webhook': typeof ApiPublicResendWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -360,8 +618,11 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/confidentialitate'
+    | '/confirmare-email'
+    | '/confirmare-newsletter'
     | '/contact'
     | '/despre'
+    | '/dezabonare'
     | '/doneaza'
     | '/echipa'
     | '/evenimente'
@@ -372,34 +633,61 @@ export interface FileRouteTypes {
     | '/membru'
     | '/misiune'
     | '/newsletter-2'
+    | '/sitemap.xml'
     | '/termeni-si-conditii'
     | '/viziune'
     | '/voluntar'
     | '/admin'
+    | '/donatiile-mele'
+    | '/portal'
     | '/articole/$slug'
     | '/comunicate/$slug'
     | '/despre-noi/$slug'
+    | '/evenimente/$id'
     | '/viziune/$slug'
     | '/articole/'
     | '/comunicate/'
     | '/viziune/'
     | '/admin/articles'
     | '/admin/branches'
+    | '/admin/campaigns'
+    | '/admin/contacts'
     | '/admin/donations'
+    | '/admin/dues'
+    | '/admin/email-log'
+    | '/admin/email-settings'
+    | '/admin/email-templates'
     | '/admin/events'
+    | '/admin/media'
     | '/admin/members'
+    | '/admin/menus'
     | '/admin/pages'
+    | '/admin/registrations'
+    | '/admin/segments'
+    | '/admin/settings'
     | '/admin/submissions'
+    | '/admin/tasks'
     | '/admin/volunteers'
+    | '/portal/calendar'
+    | '/portal/documente'
+    | '/portal/forum'
+    | '/portal/mesagerie'
     | '/admin/'
+    | '/portal/'
+    | '/portal/forum/$threadId'
     | '/api/public/euplatesc/callback'
+    | '/api/public/payments/webhook'
+    | '/api/public/resend/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
     | '/confidentialitate'
+    | '/confirmare-email'
+    | '/confirmare-newsletter'
     | '/contact'
     | '/despre'
+    | '/dezabonare'
     | '/doneaza'
     | '/echipa'
     | '/evenimente'
@@ -410,33 +698,59 @@ export interface FileRouteTypes {
     | '/membru'
     | '/misiune'
     | '/newsletter-2'
+    | '/sitemap.xml'
     | '/termeni-si-conditii'
     | '/voluntar'
+    | '/donatiile-mele'
     | '/articole/$slug'
     | '/comunicate/$slug'
     | '/despre-noi/$slug'
+    | '/evenimente/$id'
     | '/viziune/$slug'
     | '/articole'
     | '/comunicate'
     | '/viziune'
     | '/admin/articles'
     | '/admin/branches'
+    | '/admin/campaigns'
+    | '/admin/contacts'
     | '/admin/donations'
+    | '/admin/dues'
+    | '/admin/email-log'
+    | '/admin/email-settings'
+    | '/admin/email-templates'
     | '/admin/events'
+    | '/admin/media'
     | '/admin/members'
+    | '/admin/menus'
     | '/admin/pages'
+    | '/admin/registrations'
+    | '/admin/segments'
+    | '/admin/settings'
     | '/admin/submissions'
+    | '/admin/tasks'
     | '/admin/volunteers'
+    | '/portal/calendar'
+    | '/portal/documente'
+    | '/portal/forum'
+    | '/portal/mesagerie'
     | '/admin'
+    | '/portal'
+    | '/portal/forum/$threadId'
     | '/api/public/euplatesc/callback'
+    | '/api/public/payments/webhook'
+    | '/api/public/resend/webhook'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
     | '/confidentialitate'
+    | '/confirmare-email'
+    | '/confirmare-newsletter'
     | '/contact'
     | '/despre'
+    | '/dezabonare'
     | '/doneaza'
     | '/echipa'
     | '/evenimente'
@@ -447,27 +761,51 @@ export interface FileRouteTypes {
     | '/membru'
     | '/misiune'
     | '/newsletter-2'
+    | '/sitemap.xml'
     | '/termeni-si-conditii'
     | '/viziune'
     | '/voluntar'
     | '/_authenticated/admin'
+    | '/_authenticated/donatiile-mele'
+    | '/_authenticated/portal'
     | '/articole/$slug'
     | '/comunicate/$slug'
     | '/despre-noi/$slug'
+    | '/evenimente/$id'
     | '/viziune/$slug'
     | '/articole/'
     | '/comunicate/'
     | '/viziune/'
     | '/_authenticated/admin/articles'
     | '/_authenticated/admin/branches'
+    | '/_authenticated/admin/campaigns'
+    | '/_authenticated/admin/contacts'
     | '/_authenticated/admin/donations'
+    | '/_authenticated/admin/dues'
+    | '/_authenticated/admin/email-log'
+    | '/_authenticated/admin/email-settings'
+    | '/_authenticated/admin/email-templates'
     | '/_authenticated/admin/events'
+    | '/_authenticated/admin/media'
     | '/_authenticated/admin/members'
+    | '/_authenticated/admin/menus'
     | '/_authenticated/admin/pages'
+    | '/_authenticated/admin/registrations'
+    | '/_authenticated/admin/segments'
+    | '/_authenticated/admin/settings'
     | '/_authenticated/admin/submissions'
+    | '/_authenticated/admin/tasks'
     | '/_authenticated/admin/volunteers'
+    | '/_authenticated/portal/calendar'
+    | '/_authenticated/portal/documente'
+    | '/_authenticated/portal/forum'
+    | '/_authenticated/portal/mesagerie'
     | '/_authenticated/admin/'
+    | '/_authenticated/portal/'
+    | '/_authenticated/portal/forum/$threadId'
     | '/api/public/euplatesc/callback'
+    | '/api/public/payments/webhook'
+    | '/api/public/resend/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -475,11 +813,14 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   ConfidentialitateRoute: typeof ConfidentialitateRoute
+  ConfirmareEmailRoute: typeof ConfirmareEmailRoute
+  ConfirmareNewsletterRoute: typeof ConfirmareNewsletterRoute
   ContactRoute: typeof ContactRoute
   DespreRoute: typeof DespreRoute
+  DezabonareRoute: typeof DezabonareRoute
   DoneazaRoute: typeof DoneazaRoute
   EchipaRoute: typeof EchipaRoute
-  EvenimenteRoute: typeof EvenimenteRoute
+  EvenimenteRoute: typeof EvenimenteRouteWithChildren
   FilialeRoute: typeof FilialeRoute
   ImpressumRoute: typeof ImpressumRoute
   InscriereRoute: typeof InscriereRoute
@@ -487,6 +828,7 @@ export interface RootRouteChildren {
   MembruRoute: typeof MembruRoute
   MisiuneRoute: typeof MisiuneRoute
   Newsletter2Route: typeof Newsletter2Route
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermeniSiConditiiRoute: typeof TermeniSiConditiiRoute
   ViziuneRoute: typeof ViziuneRouteWithChildren
   VoluntarRoute: typeof VoluntarRoute
@@ -496,6 +838,8 @@ export interface RootRouteChildren {
   ArticoleIndexRoute: typeof ArticoleIndexRoute
   ComunicateIndexRoute: typeof ComunicateIndexRoute
   ApiPublicEuplatescCallbackRoute: typeof ApiPublicEuplatescCallbackRoute
+  ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
+  ApiPublicResendWebhookRoute: typeof ApiPublicResendWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -528,6 +872,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConfidentialitateRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/confirmare-email': {
+      id: '/confirmare-email'
+      path: '/confirmare-email'
+      fullPath: '/confirmare-email'
+      preLoaderRoute: typeof ConfirmareEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/confirmare-newsletter': {
+      id: '/confirmare-newsletter'
+      path: '/confirmare-newsletter'
+      fullPath: '/confirmare-newsletter'
+      preLoaderRoute: typeof ConfirmareNewsletterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/contact': {
       id: '/contact'
       path: '/contact'
@@ -540,6 +898,13 @@ declare module '@tanstack/react-router' {
       path: '/despre'
       fullPath: '/despre'
       preLoaderRoute: typeof DespreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dezabonare': {
+      id: '/dezabonare'
+      path: '/dezabonare'
+      fullPath: '/dezabonare'
+      preLoaderRoute: typeof DezabonareRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/doneaza': {
@@ -612,6 +977,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Newsletter2RouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/termeni-si-conditii': {
       id: '/termeni-si-conditii'
       path: '/termeni-si-conditii'
@@ -638,6 +1010,20 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/donatiile-mele': {
+      id: '/_authenticated/donatiile-mele'
+      path: '/donatiile-mele'
+      fullPath: '/donatiile-mele'
+      preLoaderRoute: typeof AuthenticatedDonatiileMeleRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/portal': {
+      id: '/_authenticated/portal'
+      path: '/portal'
+      fullPath: '/portal'
+      preLoaderRoute: typeof AuthenticatedPortalRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/articole/': {
@@ -675,6 +1061,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DespreNoiSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/evenimente/$id': {
+      id: '/evenimente/$id'
+      path: '/$id'
+      fullPath: '/evenimente/$id'
+      preLoaderRoute: typeof EvenimenteIdRouteImport
+      parentRoute: typeof EvenimenteRoute
+    }
     '/viziune/': {
       id: '/viziune/'
       path: '/'
@@ -710,11 +1103,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminBranchesRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/campaigns': {
+      id: '/_authenticated/admin/campaigns'
+      path: '/campaigns'
+      fullPath: '/admin/campaigns'
+      preLoaderRoute: typeof AuthenticatedAdminCampaignsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/contacts': {
+      id: '/_authenticated/admin/contacts'
+      path: '/contacts'
+      fullPath: '/admin/contacts'
+      preLoaderRoute: typeof AuthenticatedAdminContactsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/donations': {
       id: '/_authenticated/admin/donations'
       path: '/donations'
       fullPath: '/admin/donations'
       preLoaderRoute: typeof AuthenticatedAdminDonationsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/dues': {
+      id: '/_authenticated/admin/dues'
+      path: '/dues'
+      fullPath: '/admin/dues'
+      preLoaderRoute: typeof AuthenticatedAdminDuesRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/email-log': {
+      id: '/_authenticated/admin/email-log'
+      path: '/email-log'
+      fullPath: '/admin/email-log'
+      preLoaderRoute: typeof AuthenticatedAdminEmailLogRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/email-settings': {
+      id: '/_authenticated/admin/email-settings'
+      path: '/email-settings'
+      fullPath: '/admin/email-settings'
+      preLoaderRoute: typeof AuthenticatedAdminEmailSettingsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/email-templates': {
+      id: '/_authenticated/admin/email-templates'
+      path: '/email-templates'
+      fullPath: '/admin/email-templates'
+      preLoaderRoute: typeof AuthenticatedAdminEmailTemplatesRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/admin/events': {
@@ -724,11 +1159,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminEventsRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/media': {
+      id: '/_authenticated/admin/media'
+      path: '/media'
+      fullPath: '/admin/media'
+      preLoaderRoute: typeof AuthenticatedAdminMediaRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/members': {
       id: '/_authenticated/admin/members'
       path: '/members'
       fullPath: '/admin/members'
       preLoaderRoute: typeof AuthenticatedAdminMembersRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/menus': {
+      id: '/_authenticated/admin/menus'
+      path: '/menus'
+      fullPath: '/admin/menus'
+      preLoaderRoute: typeof AuthenticatedAdminMenusRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/admin/pages': {
@@ -738,11 +1187,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminPagesRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/registrations': {
+      id: '/_authenticated/admin/registrations'
+      path: '/registrations'
+      fullPath: '/admin/registrations'
+      preLoaderRoute: typeof AuthenticatedAdminRegistrationsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/segments': {
+      id: '/_authenticated/admin/segments'
+      path: '/segments'
+      fullPath: '/admin/segments'
+      preLoaderRoute: typeof AuthenticatedAdminSegmentsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/settings': {
+      id: '/_authenticated/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AuthenticatedAdminSettingsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/submissions': {
       id: '/_authenticated/admin/submissions'
       path: '/submissions'
       fullPath: '/admin/submissions'
       preLoaderRoute: typeof AuthenticatedAdminSubmissionsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/tasks': {
+      id: '/_authenticated/admin/tasks'
+      path: '/tasks'
+      fullPath: '/admin/tasks'
+      preLoaderRoute: typeof AuthenticatedAdminTasksRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/admin/volunteers': {
@@ -752,11 +1229,67 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminVolunteersRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/portal/': {
+      id: '/_authenticated/portal/'
+      path: '/'
+      fullPath: '/portal/'
+      preLoaderRoute: typeof AuthenticatedPortalIndexRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/calendar': {
+      id: '/_authenticated/portal/calendar'
+      path: '/calendar'
+      fullPath: '/portal/calendar'
+      preLoaderRoute: typeof AuthenticatedPortalCalendarRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/documente': {
+      id: '/_authenticated/portal/documente'
+      path: '/documente'
+      fullPath: '/portal/documente'
+      preLoaderRoute: typeof AuthenticatedPortalDocumenteRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/forum': {
+      id: '/_authenticated/portal/forum'
+      path: '/forum'
+      fullPath: '/portal/forum'
+      preLoaderRoute: typeof AuthenticatedPortalForumRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/mesagerie': {
+      id: '/_authenticated/portal/mesagerie'
+      path: '/mesagerie'
+      fullPath: '/portal/mesagerie'
+      preLoaderRoute: typeof AuthenticatedPortalMesagerieRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/forum/$threadId': {
+      id: '/_authenticated/portal/forum/$threadId'
+      path: '/$threadId'
+      fullPath: '/portal/forum/$threadId'
+      preLoaderRoute: typeof AuthenticatedPortalForumThreadIdRouteImport
+      parentRoute: typeof AuthenticatedPortalForumRoute
+    }
     '/api/public/euplatesc/callback': {
       id: '/api/public/euplatesc/callback'
       path: '/api/public/euplatesc/callback'
       fullPath: '/api/public/euplatesc/callback'
       preLoaderRoute: typeof ApiPublicEuplatescCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/payments/webhook': {
+      id: '/api/public/payments/webhook'
+      path: '/api/public/payments/webhook'
+      fullPath: '/api/public/payments/webhook'
+      preLoaderRoute: typeof ApiPublicPaymentsWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/resend/webhook': {
+      id: '/api/public/resend/webhook'
+      path: '/api/public/resend/webhook'
+      fullPath: '/api/public/resend/webhook'
+      preLoaderRoute: typeof ApiPublicResendWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -765,11 +1298,23 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminArticlesRoute: typeof AuthenticatedAdminArticlesRoute
   AuthenticatedAdminBranchesRoute: typeof AuthenticatedAdminBranchesRoute
+  AuthenticatedAdminCampaignsRoute: typeof AuthenticatedAdminCampaignsRoute
+  AuthenticatedAdminContactsRoute: typeof AuthenticatedAdminContactsRoute
   AuthenticatedAdminDonationsRoute: typeof AuthenticatedAdminDonationsRoute
+  AuthenticatedAdminDuesRoute: typeof AuthenticatedAdminDuesRoute
+  AuthenticatedAdminEmailLogRoute: typeof AuthenticatedAdminEmailLogRoute
+  AuthenticatedAdminEmailSettingsRoute: typeof AuthenticatedAdminEmailSettingsRoute
+  AuthenticatedAdminEmailTemplatesRoute: typeof AuthenticatedAdminEmailTemplatesRoute
   AuthenticatedAdminEventsRoute: typeof AuthenticatedAdminEventsRoute
+  AuthenticatedAdminMediaRoute: typeof AuthenticatedAdminMediaRoute
   AuthenticatedAdminMembersRoute: typeof AuthenticatedAdminMembersRoute
+  AuthenticatedAdminMenusRoute: typeof AuthenticatedAdminMenusRoute
   AuthenticatedAdminPagesRoute: typeof AuthenticatedAdminPagesRoute
+  AuthenticatedAdminRegistrationsRoute: typeof AuthenticatedAdminRegistrationsRoute
+  AuthenticatedAdminSegmentsRoute: typeof AuthenticatedAdminSegmentsRoute
+  AuthenticatedAdminSettingsRoute: typeof AuthenticatedAdminSettingsRoute
   AuthenticatedAdminSubmissionsRoute: typeof AuthenticatedAdminSubmissionsRoute
+  AuthenticatedAdminTasksRoute: typeof AuthenticatedAdminTasksRoute
   AuthenticatedAdminVolunteersRoute: typeof AuthenticatedAdminVolunteersRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
@@ -777,11 +1322,23 @@ interface AuthenticatedAdminRouteChildren {
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminArticlesRoute: AuthenticatedAdminArticlesRoute,
   AuthenticatedAdminBranchesRoute: AuthenticatedAdminBranchesRoute,
+  AuthenticatedAdminCampaignsRoute: AuthenticatedAdminCampaignsRoute,
+  AuthenticatedAdminContactsRoute: AuthenticatedAdminContactsRoute,
   AuthenticatedAdminDonationsRoute: AuthenticatedAdminDonationsRoute,
+  AuthenticatedAdminDuesRoute: AuthenticatedAdminDuesRoute,
+  AuthenticatedAdminEmailLogRoute: AuthenticatedAdminEmailLogRoute,
+  AuthenticatedAdminEmailSettingsRoute: AuthenticatedAdminEmailSettingsRoute,
+  AuthenticatedAdminEmailTemplatesRoute: AuthenticatedAdminEmailTemplatesRoute,
   AuthenticatedAdminEventsRoute: AuthenticatedAdminEventsRoute,
+  AuthenticatedAdminMediaRoute: AuthenticatedAdminMediaRoute,
   AuthenticatedAdminMembersRoute: AuthenticatedAdminMembersRoute,
+  AuthenticatedAdminMenusRoute: AuthenticatedAdminMenusRoute,
   AuthenticatedAdminPagesRoute: AuthenticatedAdminPagesRoute,
+  AuthenticatedAdminRegistrationsRoute: AuthenticatedAdminRegistrationsRoute,
+  AuthenticatedAdminSegmentsRoute: AuthenticatedAdminSegmentsRoute,
+  AuthenticatedAdminSettingsRoute: AuthenticatedAdminSettingsRoute,
   AuthenticatedAdminSubmissionsRoute: AuthenticatedAdminSubmissionsRoute,
+  AuthenticatedAdminTasksRoute: AuthenticatedAdminTasksRoute,
   AuthenticatedAdminVolunteersRoute: AuthenticatedAdminVolunteersRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
 }
@@ -789,16 +1346,66 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
 const AuthenticatedAdminRouteWithChildren =
   AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
 
+interface AuthenticatedPortalForumRouteChildren {
+  AuthenticatedPortalForumThreadIdRoute: typeof AuthenticatedPortalForumThreadIdRoute
+}
+
+const AuthenticatedPortalForumRouteChildren: AuthenticatedPortalForumRouteChildren =
+  {
+    AuthenticatedPortalForumThreadIdRoute:
+      AuthenticatedPortalForumThreadIdRoute,
+  }
+
+const AuthenticatedPortalForumRouteWithChildren =
+  AuthenticatedPortalForumRoute._addFileChildren(
+    AuthenticatedPortalForumRouteChildren,
+  )
+
+interface AuthenticatedPortalRouteChildren {
+  AuthenticatedPortalCalendarRoute: typeof AuthenticatedPortalCalendarRoute
+  AuthenticatedPortalDocumenteRoute: typeof AuthenticatedPortalDocumenteRoute
+  AuthenticatedPortalForumRoute: typeof AuthenticatedPortalForumRouteWithChildren
+  AuthenticatedPortalMesagerieRoute: typeof AuthenticatedPortalMesagerieRoute
+  AuthenticatedPortalIndexRoute: typeof AuthenticatedPortalIndexRoute
+}
+
+const AuthenticatedPortalRouteChildren: AuthenticatedPortalRouteChildren = {
+  AuthenticatedPortalCalendarRoute: AuthenticatedPortalCalendarRoute,
+  AuthenticatedPortalDocumenteRoute: AuthenticatedPortalDocumenteRoute,
+  AuthenticatedPortalForumRoute: AuthenticatedPortalForumRouteWithChildren,
+  AuthenticatedPortalMesagerieRoute: AuthenticatedPortalMesagerieRoute,
+  AuthenticatedPortalIndexRoute: AuthenticatedPortalIndexRoute,
+}
+
+const AuthenticatedPortalRouteWithChildren =
+  AuthenticatedPortalRoute._addFileChildren(AuthenticatedPortalRouteChildren)
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
+  AuthenticatedDonatiileMeleRoute: typeof AuthenticatedDonatiileMeleRoute
+  AuthenticatedPortalRoute: typeof AuthenticatedPortalRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
+  AuthenticatedDonatiileMeleRoute: AuthenticatedDonatiileMeleRoute,
+  AuthenticatedPortalRoute: AuthenticatedPortalRouteWithChildren,
 }
 
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
+interface EvenimenteRouteChildren {
+  EvenimenteIdRoute: typeof EvenimenteIdRoute
+}
+
+const EvenimenteRouteChildren: EvenimenteRouteChildren = {
+  EvenimenteIdRoute: EvenimenteIdRoute,
+}
+
+const EvenimenteRouteWithChildren = EvenimenteRoute._addFileChildren(
+  EvenimenteRouteChildren,
+)
 
 interface ViziuneRouteChildren {
   ViziuneSlugRoute: typeof ViziuneSlugRoute
@@ -818,11 +1425,14 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ConfidentialitateRoute: ConfidentialitateRoute,
+  ConfirmareEmailRoute: ConfirmareEmailRoute,
+  ConfirmareNewsletterRoute: ConfirmareNewsletterRoute,
   ContactRoute: ContactRoute,
   DespreRoute: DespreRoute,
+  DezabonareRoute: DezabonareRoute,
   DoneazaRoute: DoneazaRoute,
   EchipaRoute: EchipaRoute,
-  EvenimenteRoute: EvenimenteRoute,
+  EvenimenteRoute: EvenimenteRouteWithChildren,
   FilialeRoute: FilialeRoute,
   ImpressumRoute: ImpressumRoute,
   InscriereRoute: InscriereRoute,
@@ -830,6 +1440,7 @@ const rootRouteChildren: RootRouteChildren = {
   MembruRoute: MembruRoute,
   MisiuneRoute: MisiuneRoute,
   Newsletter2Route: Newsletter2Route,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermeniSiConditiiRoute: TermeniSiConditiiRoute,
   ViziuneRoute: ViziuneRouteWithChildren,
   VoluntarRoute: VoluntarRoute,
@@ -839,6 +1450,8 @@ const rootRouteChildren: RootRouteChildren = {
   ArticoleIndexRoute: ArticoleIndexRoute,
   ComunicateIndexRoute: ComunicateIndexRoute,
   ApiPublicEuplatescCallbackRoute: ApiPublicEuplatescCallbackRoute,
+  ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
+  ApiPublicResendWebhookRoute: ApiPublicResendWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

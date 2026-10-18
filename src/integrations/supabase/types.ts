@@ -14,6 +14,24 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_secrets: {
+        Row: {
+          created_at: string
+          key: string
+          value: string
+        }
+        Insert: {
+          created_at?: string
+          key: string
+          value: string
+        }
+        Update: {
+          created_at?: string
+          key?: string
+          value?: string
+        }
+        Relationships: []
+      }
       articles: {
         Row: {
           author_id: string | null
@@ -25,9 +43,11 @@ export type Database = {
           id: string
           image_url: string | null
           kind: string
+          pdf_url: string | null
           published_at: string | null
           slug: string
           status: string
+          tags: string[]
           title: string
         }
         Insert: {
@@ -40,9 +60,11 @@ export type Database = {
           id?: string
           image_url?: string | null
           kind?: string
+          pdf_url?: string | null
           published_at?: string | null
           slug: string
           status?: string
+          tags?: string[]
           title: string
         }
         Update: {
@@ -55,12 +77,79 @@ export type Database = {
           id?: string
           image_url?: string | null
           kind?: string
+          pdf_url?: string | null
           published_at?: string | null
           slug?: string
           status?: string
+          tags?: string[]
           title?: string
         }
         Relationships: []
+      }
+      audit_log: {
+        Row: {
+          action: string
+          created_at: string
+          id: string
+          ip_address: string | null
+          record_id: string | null
+          table_name: string
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          record_id?: string | null
+          table_name: string
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          record_id?: string | null
+          table_name?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      branch_messages: {
+        Row: {
+          author_id: string
+          author_name: string
+          body: string
+          branch_id: string
+          created_at: string
+          id: string
+        }
+        Insert: {
+          author_id: string
+          author_name?: string
+          body: string
+          branch_id: string
+          created_at?: string
+          id?: string
+        }
+        Update: {
+          author_id?: string
+          author_name?: string
+          body?: string
+          branch_id?: string
+          created_at?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "branch_messages_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: false
+            referencedRelation: "branches"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       branches: {
         Row: {
@@ -92,6 +181,100 @@ export type Database = {
         }
         Relationships: []
       }
+      contact_notes: {
+        Row: {
+          author_id: string | null
+          contact_id: string
+          created_at: string
+          id: string
+          note: string
+        }
+        Insert: {
+          author_id?: string | null
+          contact_id: string
+          created_at?: string
+          id?: string
+          note: string
+        }
+        Update: {
+          author_id?: string | null
+          contact_id?: string
+          created_at?: string
+          id?: string
+          note?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contact_notes_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contacts: {
+        Row: {
+          branch_id: string | null
+          city: string | null
+          county: string | null
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          member_id: string | null
+          newsletter_confirm_token: string | null
+          newsletter_confirmed: boolean
+          phone: string | null
+          source: string
+          tags: string[]
+          unsubscribe_token: string
+          updated_at: string
+        }
+        Insert: {
+          branch_id?: string | null
+          city?: string | null
+          county?: string | null
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          member_id?: string | null
+          newsletter_confirm_token?: string | null
+          newsletter_confirmed?: boolean
+          phone?: string | null
+          source?: string
+          tags?: string[]
+          unsubscribe_token?: string
+          updated_at?: string
+        }
+        Update: {
+          branch_id?: string | null
+          city?: string | null
+          county?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          member_id?: string | null
+          newsletter_confirm_token?: string | null
+          newsletter_confirmed?: boolean
+          phone?: string | null
+          source?: string
+          tags?: string[]
+          unsubscribe_token?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contacts_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: false
+            referencedRelation: "branches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       donations: {
         Row: {
           amount: number
@@ -100,8 +283,11 @@ export type Database = {
           cnp: string | null
           county: string | null
           created_at: string
+          currency: string
+          donation_type: string
           donor_email: string
           donor_name: string
+          environment: string
           ep_transaction_id: string | null
           id: string
           member_id: string | null
@@ -111,6 +297,9 @@ export type Database = {
           processor_message: string | null
           status: string
           street: string | null
+          stripe_customer_id: string | null
+          stripe_session_id: string | null
+          stripe_subscription_id: string | null
           terms_accepted: boolean
         }
         Insert: {
@@ -120,8 +309,11 @@ export type Database = {
           cnp?: string | null
           county?: string | null
           created_at?: string
+          currency?: string
+          donation_type?: string
           donor_email: string
           donor_name: string
+          environment?: string
           ep_transaction_id?: string | null
           id?: string
           member_id?: string | null
@@ -131,6 +323,9 @@ export type Database = {
           processor_message?: string | null
           status?: string
           street?: string | null
+          stripe_customer_id?: string | null
+          stripe_session_id?: string | null
+          stripe_subscription_id?: string | null
           terms_accepted?: boolean
         }
         Update: {
@@ -140,8 +335,11 @@ export type Database = {
           cnp?: string | null
           county?: string | null
           created_at?: string
+          currency?: string
+          donation_type?: string
           donor_email?: string
           donor_name?: string
+          environment?: string
           ep_transaction_id?: string | null
           id?: string
           member_id?: string | null
@@ -151,6 +349,9 @@ export type Database = {
           processor_message?: string | null
           status?: string
           street?: string | null
+          stripe_customer_id?: string | null
+          stripe_session_id?: string | null
+          stripe_subscription_id?: string | null
           terms_accepted?: boolean
         }
         Relationships: [
@@ -159,6 +360,262 @@ export type Database = {
             columns: ["member_id"]
             isOneToOne: false
             referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dues: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          member_id: string
+          paid_at: string | null
+          status: string
+          year: number
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          id?: string
+          member_id: string
+          paid_at?: string | null
+          status?: string
+          year: number
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          member_id?: string
+          paid_at?: string | null
+          status?: string
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dues_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      email_campaigns: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          name: string
+          scheduled_at: string | null
+          segment_id: string | null
+          sent_count: number
+          status: string
+          template_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name: string
+          scheduled_at?: string | null
+          segment_id?: string | null
+          sent_count?: number
+          status?: string
+          template_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name?: string
+          scheduled_at?: string | null
+          segment_id?: string | null
+          sent_count?: number
+          status?: string
+          template_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_campaigns_segment_id_fkey"
+            columns: ["segment_id"]
+            isOneToOne: false
+            referencedRelation: "email_segments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "email_campaigns_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "email_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      email_messages: {
+        Row: {
+          campaign_id: string | null
+          contact_id: string | null
+          created_at: string
+          email: string
+          error: string | null
+          id: string
+          resend_id: string | null
+          status: string
+          subject: string | null
+          template_name: string | null
+          updated_at: string
+        }
+        Insert: {
+          campaign_id?: string | null
+          contact_id?: string | null
+          created_at?: string
+          email: string
+          error?: string | null
+          id?: string
+          resend_id?: string | null
+          status?: string
+          subject?: string | null
+          template_name?: string | null
+          updated_at?: string
+        }
+        Update: {
+          campaign_id?: string | null
+          contact_id?: string | null
+          created_at?: string
+          email?: string
+          error?: string | null
+          id?: string
+          resend_id?: string | null
+          status?: string
+          subject?: string | null
+          template_name?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_messages_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "email_campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "email_messages_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      email_segments: {
+        Row: {
+          created_at: string
+          filters: Json
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          filters?: Json
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          filters?: Json
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      email_suppressions: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          reason: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          reason: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          reason?: string
+        }
+        Relationships: []
+      }
+      email_templates: {
+        Row: {
+          body_html: string
+          created_at: string
+          id: string
+          name: string
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          body_html: string
+          created_at?: string
+          id?: string
+          name: string
+          subject: string
+          updated_at?: string
+        }
+        Update: {
+          body_html?: string
+          created_at?: string
+          id?: string
+          name?: string
+          subject?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      event_registrations: {
+        Row: {
+          created_at: string
+          email: string
+          event_id: string
+          full_name: string
+          gdpr_consent: boolean
+          id: string
+          phone: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          event_id: string
+          full_name: string
+          gdpr_consent?: boolean
+          id?: string
+          phone?: string | null
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          event_id?: string
+          full_name?: string
+          gdpr_consent?: boolean
+          id?: string
+          phone?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_registrations_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
             referencedColumns: ["id"]
           },
         ]
@@ -204,19 +661,126 @@ export type Database = {
           },
         ]
       }
+      forum_posts: {
+        Row: {
+          author_id: string
+          body: string
+          created_at: string
+          hidden: boolean
+          id: string
+          thread_id: string
+        }
+        Insert: {
+          author_id: string
+          body: string
+          created_at?: string
+          hidden?: boolean
+          id?: string
+          thread_id: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          created_at?: string
+          hidden?: boolean
+          id?: string
+          thread_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forum_posts_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "forum_threads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      forum_threads: {
+        Row: {
+          author_id: string
+          body: string
+          created_at: string
+          id: string
+          locked: boolean
+          title: string
+        }
+        Insert: {
+          author_id: string
+          body: string
+          created_at?: string
+          id?: string
+          locked?: boolean
+          title: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          created_at?: string
+          id?: string
+          locked?: boolean
+          title?: string
+        }
+        Relationships: []
+      }
+      internal_events: {
+        Row: {
+          branch_id: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          location: string | null
+          starts_at: string
+          title: string
+        }
+        Insert: {
+          branch_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          location?: string | null
+          starts_at: string
+          title: string
+        }
+        Update: {
+          branch_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          location?: string | null
+          starts_at?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "internal_events_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: false
+            referencedRelation: "branches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       members: {
         Row: {
           activity_type: string | null
           address: string | null
+          address_encrypted: string | null
           birth_date: string | null
           branch_id: string | null
           city: string | null
           cnp: string | null
+          cnp_encrypted: string | null
+          confirm_token: string | null
           county: string | null
           created_at: string
           dues_paid: number
           education: string | null
           email: string
+          email_confirmed: boolean
           full_name: string
           gdpr_consent: boolean
           general_consent: boolean
@@ -227,6 +791,7 @@ export type Database = {
           other_languages: string | null
           phone: string | null
           profession: string | null
+          rejection_reason: string | null
           role: string
           status: string
           workplace: string | null
@@ -234,15 +799,19 @@ export type Database = {
         Insert: {
           activity_type?: string | null
           address?: string | null
+          address_encrypted?: string | null
           birth_date?: string | null
           branch_id?: string | null
           city?: string | null
           cnp?: string | null
+          cnp_encrypted?: string | null
+          confirm_token?: string | null
           county?: string | null
           created_at?: string
           dues_paid?: number
           education?: string | null
           email: string
+          email_confirmed?: boolean
           full_name: string
           gdpr_consent?: boolean
           general_consent?: boolean
@@ -253,6 +822,7 @@ export type Database = {
           other_languages?: string | null
           phone?: string | null
           profession?: string | null
+          rejection_reason?: string | null
           role?: string
           status?: string
           workplace?: string | null
@@ -260,15 +830,19 @@ export type Database = {
         Update: {
           activity_type?: string | null
           address?: string | null
+          address_encrypted?: string | null
           birth_date?: string | null
           branch_id?: string | null
           city?: string | null
           cnp?: string | null
+          cnp_encrypted?: string | null
+          confirm_token?: string | null
           county?: string | null
           created_at?: string
           dues_paid?: number
           education?: string | null
           email?: string
+          email_confirmed?: boolean
           full_name?: string
           gdpr_consent?: boolean
           general_consent?: boolean
@@ -279,6 +853,7 @@ export type Database = {
           other_languages?: string | null
           phone?: string | null
           profession?: string | null
+          rejection_reason?: string | null
           role?: string
           status?: string
           workplace?: string | null
@@ -293,11 +868,55 @@ export type Database = {
           },
         ]
       }
+      portal_documents: {
+        Row: {
+          branch_id: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          file_url: string
+          id: string
+          min_role: string
+          title: string
+        }
+        Insert: {
+          branch_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          file_url: string
+          id?: string
+          min_role?: string
+          title: string
+        }
+        Update: {
+          branch_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          file_url?: string
+          id?: string
+          min_role?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portal_documents_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: false
+            referencedRelation: "branches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       site_pages: {
         Row: {
           content: string
           created_at: string
           id: string
+          og_image: string | null
+          seo_description: string | null
+          seo_title: string | null
           slug: string
           status: string
           title: string
@@ -306,6 +925,9 @@ export type Database = {
           content?: string
           created_at?: string
           id?: string
+          og_image?: string | null
+          seo_description?: string | null
+          seo_title?: string | null
           slug: string
           status?: string
           title: string
@@ -314,9 +936,30 @@ export type Database = {
           content?: string
           created_at?: string
           id?: string
+          og_image?: string | null
+          seo_description?: string | null
+          seo_title?: string | null
           slug?: string
           status?: string
           title?: string
+        }
+        Relationships: []
+      }
+      site_settings: {
+        Row: {
+          key: string
+          updated_at: string
+          value: Json
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          value?: Json
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          value?: Json
         }
         Relationships: []
       }
@@ -352,6 +995,50 @@ export type Database = {
           status?: string
         }
         Relationships: []
+      }
+      tasks: {
+        Row: {
+          assignee: string | null
+          branch_id: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          due_date: string | null
+          id: string
+          status: string
+          title: string
+        }
+        Insert: {
+          assignee?: string | null
+          branch_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          status?: string
+          title: string
+        }
+        Update: {
+          assignee?: string | null
+          branch_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          status?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: false
+            referencedRelation: "branches"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -434,12 +1121,30 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      confirm_newsletter: { Args: { _token: string }; Returns: boolean }
+      decrypt_sensitive: { Args: { p_cipher: string }; Returns: string }
+      encrypt_sensitive: { Args: { p_text: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      portal_access: { Args: { _user_id: string }; Returns: boolean }
+      start_newsletter_signup: { Args: { _email: string }; Returns: string }
+      unsubscribe_email: { Args: { _token: string }; Returns: boolean }
+      upsert_contact: {
+        Args: {
+          _branch_id?: string
+          _county?: string
+          _email: string
+          _full_name: string
+          _member_id?: string
+          _phone?: string
+          _source?: string
+        }
+        Returns: string
       }
       user_branch: { Args: { _user_id: string }; Returns: string }
     }

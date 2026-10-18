@@ -19,6 +19,8 @@ export const Route = createFileRoute("/_authenticated/admin/articles")({
         { name: "status", label: "Status", type: "select", required: true, inList: true, options: [{ value: "draft", label: "Draft" }, { value: "publicat", label: "Publicat" }] },
         { name: "published_at", label: "Data publicării", type: "datetime-local", inList: true },
         { name: "image_url", label: "Adresă imagine" },
+        { name: "pdf_url", label: "Adresă PDF (comunicate)" },
+        { name: "tags", label: "Etichete (separate prin virgulă)", type: "tags", inList: true },
         { name: "excerpt", label: "Rezumat" },
         { name: "content", label: "Conținut", type: "textarea", required: true },
       ]}

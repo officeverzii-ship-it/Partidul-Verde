@@ -1,0 +1,53 @@
+// Trimitere emailuri prin conexiunea Resend (gateway Lovable). Doar server-side.
+import { createPublicBackendClient } from './public-backend.server';
+
+const GATEWAY_URL = 'https://connector-gateway.lovable.dev/resend';
+export const SITE_URL = (import.meta.env['VITE_SITE_URL'] as string | undefined) ?? 'https://partidulverde.lovable.app';
+
+export type EmailSettings = { from_name: string; from_address: string };
+const DEFAULT_FROM: EmailSettings = { from_name: 'Partidul Verde', from_address: 'onboarding@resend.dev' };
+
+type Client = ReturnType<typeof createPublicBackendClient>;
+
+export async function getEmailSettings(client: Client): Promise<EmailSettings> {
+  const { data } = await client.from('site_settings').select('value').eq('key', 'email').maybeSingle();
+  const v = (data?.value ?? {}) as Partial<EmailSettings>;
+  return { from_name: v.from_name || DEFAULT_FROM.from_name, from_address: v.from_address || DEFAULT_FROM.from_address };
+}
+
+export function renderTemplate(body: string, vars: Record<string, string>): string {
+  return body.replace(/\{\{\s*([a-zA-Z_]+)\s*\}\}/g, (_, k: string) => vars[k] ?? '');
+}
+
+export async function isSuppressed(client: Client, email: string): Promise<boolean> {
+  const { data } = await client.from('email_suppressions').select('id').eq('email', email.toLowerCase()).maybeSingle();
+  return !!data;
+}
+
+export async function sendEmail(client: Client, params: { to: string; subject: string; html: string }) {
+  const lovKey = process.env['LOVABLE_API_KEY'];
+  const resendKey = process.env['RESEND_API_KEY'];
+  if (!lovKey || !resendKey) throw new Error('Conexiunea Resend nu este configurată.');
+  const from = await getEmailSettings(client);
+  const res = await fetch(`${GATEWAY_URL}/emails`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${lovKey}`,
+      'X-Connection-Api-Key': resendKey,
+    },
+    body: JSON.stringify({ from: `${from.from_name} <${from.from_address}>`, to: [params.to], subject: params.subject, html: params.html }),
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`Trimiterea a eșuat [${res.status}]: ${body}`);
+  }
+  const json = (await res.json()) as { id?: string };
+  return { id: json.id ?? null };
+}
+
+/** Footer de dezabonare obligatoriu pentru emailurile comerciale. */
+export function withUnsubscribeFooter(html: string, token: string | null): string {
+  const url = token ? `${SITE_URL}/dezabonare?token=${token}` : `${SITE_URL}/dezabonare`;
+  return `${html}<hr style="margin-top:32px;border:none;border-top:1px solid #ddd"/><p style="font-size:12px;color:#666">Primești acest email deoarece te-ai abonat la comunicările Partidului Verde. <a href="${url}">Dezabonare cu un click</a>.</p>`;
+}

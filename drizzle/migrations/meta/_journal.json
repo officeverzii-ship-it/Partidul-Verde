@@ -15,6 +15,90 @@
       "when": 1792233518048,
       "tag": "0001_membership_original_form_fields",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792266180377,
+      "tag": "0002_create_audit_log",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1792266264668,
+      "tag": "0003_faza1_cms_media_settings_seed",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792266862272,
+      "tag": "0004_faza2_crm_tables",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1792266879630,
+      "tag": "0005_faza2_notes_and_rejection",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792267291412,
+      "tag": "0006_faza2_contacts_anon_grant",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1792267423229,
+      "tag": "0007_faza2_audit_anon_insert",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1792267541986,
+      "tag": "0008_faza2_upsert_contact_function",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1792267736889,
+      "tag": "0009_faza2_fix_crypto_search_path",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1792268450138,
+      "tag": "0010_faza3_email_module",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1792269257790,
+      "tag": "0011_faza4_stripe_donations",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1792270045098,
+      "tag": "0012_faza5_portal_intern",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1792270073206,
+      "tag": "0013_faza5_portal_access_gate",
+      "breakpoints": true
     }
   ]
 }

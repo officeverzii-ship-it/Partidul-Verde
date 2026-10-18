@@ -48,7 +48,10 @@
 .home-hero {height:510px;position:relative;overflow:hidden;}
 .hero-caption {position:absolute;left:50%;top:48%;transform:translate(-50%,-20%) rotate(-7deg);background:color-mix(in srgb,var(--brand) 83%,transparent);color:var(--inverse);padding:14px 24px;}
 .hero-caption h1 {font-size:54px;line-height:1.18;font-weight:700;white-space:nowrap;}
-.hero-partner {position:absolute;right:22px;top:90px;width:145px;}
+.hero-partner {position:absolute;right:22px;top:90px;width:145px;display:block;z-index:40;}
+.hero-partner-tip {position:absolute;top:calc(100% + 9px);right:0;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;background:var(--brand);color:var(--inverse);font-size:12px;font-weight:600;line-height:1.3;padding:7px 11px;border-radius:7px;box-shadow:var(--shadow-card);opacity:0;visibility:hidden;transform:translateY(-4px);transition:opacity .15s ease,transform .15s ease,visibility .15s;pointer-events:none;}
+.hero-partner-tip::before {content:"";position:absolute;bottom:100%;right:16px;border:5px solid transparent;border-bottom-color:var(--brand);}
+.hero-partner:hover .hero-partner-tip,.hero-partner:focus-visible .hero-partner-tip {opacity:1;visibility:visible;transform:none;}
 .join-band {background:var(--accent);}
 .join-item {display:flex;flex-direction:column;align-items:center;text-align:center;gap:7px;}
 .join-item img {width:62px;height:64px;object-fit:contain;}
@@ -59,6 +62,16 @@
 .prose-site h2 {font-size:25px;font-weight:700;color:var(--brand);margin:30px 0 14px;}
 .prose-site a {color:var(--brand);text-decoration:underline;}
 .cookie-bar {position:fixed;z-index:50;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);box-shadow:var(--shadow-card);}
+.romania-map {display:block;aspect-ratio:900/620;}
+.county-shape {fill:var(--secondary);stroke:var(--muted-foreground);stroke-width:1;stroke-linejoin:round;vector-effect:non-scaling-stroke;transition:fill .15s ease;}
+.county-available {cursor:pointer;}
+.county-available .county-shape {fill:color-mix(in srgb,var(--brand) 23%,var(--card));}
+.county-available:hover .county-shape,.county-available:focus-visible .county-shape,.county-selected .county-shape {fill:var(--brand);}
+.county-selected {cursor:pointer;}
+.county-label {fill:var(--foreground);font-size:12px;font-weight:600;pointer-events:none;}
+.county-available:hover .county-label,.county-available:focus-visible .county-label,.county-selected .county-label {fill:var(--inverse);}
+.country-outline {fill:none;stroke:var(--brand);stroke-width:2;stroke-linejoin:round;vector-effect:non-scaling-stroke;pointer-events:none;}
+.county-callout {fill:none;stroke:var(--muted-foreground);stroke-width:1;vector-effect:non-scaling-stroke;pointer-events:none;}
 @media(max-width:767px){
  .home-hero {height:485px;}
  .nav-menu {display:none;}

@@ -1,5 +1,8 @@
 # Roadmap
 
+- [x] Corectarea configurației conexiunii publice pentru Coolify; 11 teste trecute și Acasă, Articole, Filiale verificate cu date reale în preview
+- [ ] Reverificarea celor trei pagini pe Coolify: necesită actualizarea codului, corectarea adresei runtime invalide și redeploy pe hosting
+
 - [x] Identitatea originală, prima pagină, meniuri, viziune și pagini de informații
 - [x] Import 8 articole reale și 19 pagini; conținutul demonstrativ retras
 - [x] Articole, evenimente și filiale citesc din baza de date; pagini administrabile

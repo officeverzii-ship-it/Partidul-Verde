@@ -33,8 +33,10 @@ export function useSiteForm(
   const [sent, setSent] = useState(false);
   const [lastAt, setLastAt] = useState(0);
 
-  const set = (name: string) => (e: { currentTarget: { value: string } }) =>
-    setValues((v) => ({ ...v, [name]: e.currentTarget.value }));
+  const set = (name: string) => (e: { currentTarget: { value: string } }) => {
+    const value = e.currentTarget.value;
+    setValues((v) => ({ ...v, [name]: value }));
+  };
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
