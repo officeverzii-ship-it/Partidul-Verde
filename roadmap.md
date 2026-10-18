@@ -1,5 +1,8 @@
 # Roadmap
 
+- [x] Confirmarea conturilor pe DuckDNS: destinația formularului verificată în browser fără trimitere de email; 8 teste trecute; modificări pregătite pentru GitHub
+- [ ] Activarea confirmării pe hosting și verificarea emailului real: necesită Redeploy în Coolify și publicarea versiunii Lovable pentru redirecționarea de rezervă
+
 - [x] Sigla European Greens în panou verde în colțul din dreapta sus, simetric cu panoul Verzii din stânga sus; verificat la 1280, 890, 768, 390 și 320
 - [x] Trimiterea siglei European Greens pe GitHub main: 40271e2
 

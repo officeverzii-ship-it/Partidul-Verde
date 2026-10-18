@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Layout } from "@/components/site/Layout";
 import { Field } from "@/components/site/Form";
 import { Button } from "@/components/ui/button";
-import { PASSWORD_RECOVERY_URL } from "@/lib/password-recovery";
+import { ACCOUNT_CONFIRMATION_URL, PASSWORD_RECOVERY_URL } from "@/lib/password-recovery";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -60,7 +60,7 @@ function AuthPage() {
       const { error } = await supabase.auth.signUp({
         email,
         password,
-        options: { emailRedirectTo: window.location.origin },
+        options: { emailRedirectTo: ACCOUNT_CONFIRMATION_URL },
       });
       setMsg(error ? error.message : "Verifică emailul pentru a confirma contul.");
     }
