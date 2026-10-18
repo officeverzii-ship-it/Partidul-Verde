@@ -26,6 +26,7 @@ export const visionTopics = [
  ['comunitati-durabile','Comunități durabile','Bunăstare!'],
 ] as const;
 export const mainNav = [{label:'Despre noi',to:'/despre'},{label:'Viziune',to:'/viziune'},{label:'Media',to:'/media'},{label:'Contact',to:'/contact'}] as const;
+export const mediaCategories = [{slug:'comunicate',label:'Comunicate'},{slug:'documente',label:'Documente'},{slug:'evenimente',label:'Evenimente'},{slug:'stiri',label:'Știri'},{slug:'toate',label:'Toate'}] as const;
 export const footerNav = [
  {title:'Partidul Verde',links:[{label:'Despre noi',to:'/despre'},{label:'Viziune',to:'/viziune'},{label:'Filiale județene',to:'/filiale'}]},
  {title:'Implică-te',links:[{label:'Înscriere',to:'/inscriere'},{label:'Donează',to:'/doneaza'},{label:'Newsletter',to:'/newsletter-2'}]},

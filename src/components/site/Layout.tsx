@@ -4,7 +4,7 @@ import { publicContentOptions } from '@/lib/public-content';
 import { useState, useEffect, type ReactNode } from 'react';
 import { Menu, X, ChevronDown, ArrowUp, Facebook, Instagram, Youtube, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { mainNav, footerNav, siteConfig, aboutLinks, visionTopics } from '@/data/site';
+import { mainNav, footerNav, siteConfig, aboutLinks, visionTopics, mediaCategories } from '@/data/site';
 import logo from '@/assets/original/logo.png.asset.json';
 import european from '@/assets/original/european.png.asset.json';
 type SiteInfo={name:string;tagline:string;description:string;email:string;phone:string;address:string;logo_url:string;facebook:string;instagram:string;youtube:string};
@@ -18,9 +18,10 @@ function Header({home}:{home:boolean}) {
  return <header className={`site-header ${home?'site-header-home':''}`}><nav aria-label="Navigare principală" className="relative mx-auto flex max-w-[1200px] items-start justify-between gap-4 px-5">
   <Link to="/" aria-label={`${site.name} — Acasă`} className="logo-corner shrink-0 py-4"><img src={s.site?.logo_url||logo.url} className="site-logo" width={125} height={130} alt={site.name}/></Link>
  <div className="nav-menu hidden pt-12 md:flex">{nav.map(item=><div key={item.to} className="nav-group" onMouseEnter={()=>setMenu(item.to)} onMouseLeave={()=>setMenu('')}>
- <div className="flex items-center gap-1"><Link to={item.to} className="py-2">{item.label}</Link>{(item.to==='/despre'||item.to==='/viziune')&&<Button variant="ghost" size="icon" aria-label={`Deschide ${item.label}`} aria-expanded={menu===item.to} onClick={()=>setMenu(menu===item.to?'':item.to)} className="size-6 text-inverse hover:text-foreground"><ChevronDown/></Button>}</div>
+ <div className="flex items-center gap-1"><Link to={item.to} className="py-2">{item.label}</Link>{(item.to==='/despre'||item.to==='/viziune'||item.to==='/media')&&<Button variant="ghost" size="icon" aria-label={`Deschide ${item.label}`} aria-expanded={menu===item.to} onClick={()=>setMenu(menu===item.to?'':item.to)} className="size-6 text-inverse hover:text-foreground"><ChevronDown/></Button>}</div>
  {menu===item.to&&item.to==='/despre'&&<div className="nav-dropdown"><div className="nav-dropdown-inner">{aboutLinks.map(a=><Link key={a.label} to={a.to} params={'slug'in a?{slug:a.slug}:{}} className="block px-3 py-2 text-sm hover:bg-secondary">{a.label}</Link>)}</div></div>}
  {menu===item.to&&item.to==='/viziune'&&<div className="nav-dropdown"><div className="nav-dropdown-inner">{visionTopics.map(([slug,title])=><Link key={slug} to="/viziune/$slug" params={{slug}} className="block px-3 py-2 text-sm hover:bg-secondary">{title}</Link>)}</div></div>}
+ {menu===item.to&&item.to==='/media'&&<div className="nav-dropdown"><div className="nav-dropdown-inner">{mediaCategories.filter(c=>c.slug!=='toate').map(c=><Link key={c.slug} to="/media" search={{categorie:c.slug}} onClick={()=>setMenu('')} className="block px-3 py-2 text-sm hover:bg-secondary">{c.label}</Link>)}</div></div>}
  </div>)}</div>
  {home&&<a href="https://europeangreens.eu" target="_blank" rel="noopener noreferrer" className="partner-corner shrink-0" aria-label="European Greens — deschide site-ul într-o fereastră nouă"><span className="partner-corner-bg" aria-hidden="true"/><img src={european.url} width={145} height={100} alt="European Greens"/><span className="partner-tip" aria-hidden="true"><ExternalLink className="size-3.5 shrink-0"/><span>Deschide europeangreens.eu în altă fereastră</span></span></a>}
  <Button variant="ghost" size="icon" className="nav-toggle mt-7 text-inverse md:hidden" aria-label={open?'Închide meniul':'Deschide meniul'} aria-expanded={open} onClick={()=>setOpen(!open)}>{open?<X/>:<Menu/>}</Button>
