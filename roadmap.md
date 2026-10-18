@@ -1,6 +1,7 @@
 # Roadmap
 
 - [x] Administrare utilizatori și roluri din panoul Adminului Național, cu filială și audit; atribuire, citire și retragere Editor verificate autentificat; 2 teste de validare trecute
+- [x] Trimiterea administrării accesului pe GitHub main: 95f0577
 
 - [x] Corectarea destinației DuckDNS pentru resetare și testarea redirecționării de rezervă: 4 teste și verificare în browser
 - [x] Trimiterea corecției resetării parolei pe GitHub main: d0f015b
