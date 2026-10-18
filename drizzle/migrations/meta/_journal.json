@@ -148,6 +148,20 @@
       "when": 1792347907553,
       "tag": "0020_selected_security_identity_management",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1792350612367,
+      "tag": "0021_seed_confirmation_email_templates",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1792350841517,
+      "tag": "0022_localize_confirmation_email_templates_ro",
+      "breakpoints": true
     }
   ]
 }

@@ -23,7 +23,7 @@ export const Route = createFileRoute("/api/public/euplatesc/callback")({
         if (!/^[0-9a-f-]{36}$/i.test(invoiceId)) return new Response("bad invoice", { status: 400 });
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-        const { data: donation } = await supabaseAdmin.from("donations").select("amount").eq("id", invoiceId).single();
+        const { data: donation } = await supabaseAdmin.from("donations").select("amount, donor_name, donor_email, status").eq("id", invoiceId).single();
         if (!donation || Number(donation.amount).toFixed(2) !== Number(g("amount")).toFixed(2)) {
           return new Response("amount mismatch", { status: 400 });
         }
@@ -38,6 +38,22 @@ export const Route = createFileRoute("/api/public/euplatesc/callback")({
             paid_at: approved ? new Date().toISOString() : null,
           })
           .eq("id", invoiceId);
+
+        // Email de mulțumire o singură dată, la prima confirmare a plății (șablon „confirmare-donatie" din admin).
+        if (approved && donation.status !== "confirmata" && donation.donor_email) {
+          try {
+            const { sendNamedTemplate } = await import("@/lib/email.server");
+            await sendNamedTemplate({
+              to: donation.donor_email,
+              templateName: "confirmare-donatie",
+              vars: {
+                prenume: (donation.donor_name ?? "").split(" ")[0] ?? "",
+                nume: donation.donor_name ?? "",
+                summa: `${Number(donation.amount).toFixed(2)} RON`,
+              },
+            });
+          } catch { /* plata rămâne confirmată chiar dacă emailul nu pleacă */ }
+        }
 
         return new Response("OK");
       },

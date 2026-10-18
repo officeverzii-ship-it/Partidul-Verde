@@ -2,7 +2,6 @@ import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
 import { createPublicBackendClient } from './public-backend.server';
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware';
-import { escapeHtml } from './output-safety';
 
 type Client = ReturnType<typeof createPublicBackendClient>;
 
@@ -139,12 +138,13 @@ export const subscribeNewsletter = createServerFn({ method: 'POST' })
     const { data: token, error } = await admin.rpc('start_newsletter_signup', { _email: data.email });
     if (error) throw new Error('Nu am putut înregistra abonarea. Încearcă din nou.');
     if (!token) return { success: true };
-    const { sendEmail, SITE_URL } = await import('./email.server');
+    const { sendNamedTemplate, SITE_URL } = await import('./email.server');
     const url = `${SITE_URL}/confirmare-newsletter?token=${token}`;
-    await sendEmail(client, {
+    // Șablonul „confirmare-newsletter" se editează din Admin → Șabloane email.
+    await sendNamedTemplate({
       to: data.email,
-      subject: 'Confirmă abonarea la newsletterul Partidului Verde',
-      html: `<p>Bună, ${escapeHtml(data.full_name)}!</p><p>Apasă pe linkul de mai jos pentru a confirma abonarea la newsletter:</p><p><a href="${escapeHtml(url)}">${escapeHtml(url)}</a></p><p>Dacă nu ai cerut această abonare, ignoră acest mesaj.</p>`,
+      templateName: 'confirmare-newsletter',
+      vars: { prenume: data.full_name.split(' ')[0] ?? '', nume: data.full_name, link_confirmare: url },
     });
     return { success: true };
   });

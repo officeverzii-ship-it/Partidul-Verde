@@ -78,7 +78,8 @@ function Page() {
         <h1 className="font-display text-3xl font-bold">Șabloane de email</h1>
         <Button onClick={() => { setMsg(null); setEditing("new"); }} className="btn-brand px-4 py-2 text-sm">+ Șablon nou</Button>
       </div>
-      <p className="mt-2 text-sm text-foreground/60">Variabile disponibile: {"{{prenume}}"}, {"{{nume}}"}, {"{{filiala}}"}. Footerul de dezabonare se adaugă automat.</p>
+      <p className="mt-2 text-sm text-foreground/60">Variabile disponibile: {"{{prenume}}"}, {"{{nume}}"}, {"{{filiala}}"}, {"{{link_confirmare}}"}, {"{{summa}}"}. Footerul de dezabonare se adaugă automat.</p>
+      <p className="mt-1 text-sm text-foreground/60">Șabloanele cu numele <b>confirmare-adeziune</b>, <b>confirmare-donatie</b> și <b>confirmare-newsletter</b> se trimit automat la formularele publice — nu le redenumi.</p>
 
       {editing && (
         <form onSubmit={onSubmit} className="glass mt-5 grid gap-4 rounded-2xl p-6">

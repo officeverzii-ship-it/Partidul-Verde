@@ -34,5 +34,14 @@ export const submitMembership=createServerFn({method:'POST'}).inputValidator((v:
    // member_id nu se mai leagă aici: anonimii nu pot citi id-ul rândului inserat; legătura se face din admin la validare.
  });
 
+ // Email de confirmare (double opt-in) din șablonul „confirmare-adeziune", editabil în admin.
+ try {
+   const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+   const { data: member } = await supabaseAdmin.from('members').select('confirm_token').eq('email', data.email).order('created_at', { ascending: false }).limit(1).maybeSingle();
+   const { sendNamedTemplate, SITE_URL } = await import('./email.server');
+   const link = member?.confirm_token ? `${SITE_URL}/confirmare-email?token=${member.confirm_token}` : SITE_URL;
+   await sendNamedTemplate({ to: data.email, templateName: 'confirmare-adeziune', vars: { prenume: data.full_name.split(' ')[0] ?? '', nume: data.full_name, link_confirmare: link } });
+ } catch { /* cererea rămâne înregistrată chiar dacă emailul nu pleacă */ }
+
  return {success:true};
 });

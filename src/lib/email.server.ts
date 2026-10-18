@@ -46,6 +46,20 @@ export async function sendEmail(client: Client, params: { to: string; subject: s
   return { id: json.id ?? null };
 }
 
+/** Trimite un email tranzacțional pe baza unui șablon din Admin → Șabloane email (căutat după nume). */
+export async function sendNamedTemplate(opts: { to: string; templateName: string; vars: Record<string, string> }) {
+  const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+  const { data: tpl } = await supabaseAdmin.from('email_templates').select('subject, body_html').eq('name', opts.templateName).maybeSingle();
+  if (!tpl) return { sent: false as const, reason: 'no_template' as const };
+  const { sendTransactional } = await import('./email.functions');
+  return sendTransactional(supabaseAdmin as never, {
+    to: opts.to,
+    subject: renderTemplate(tpl.subject, opts.vars),
+    html: renderTemplate(tpl.body_html, opts.vars),
+    templateName: opts.templateName,
+  });
+}
+
 /** Footer de dezabonare obligatoriu pentru emailurile comerciale. */
 export function withUnsubscribeFooter(html: string, token: string | null): string {
   const url = token ? `${SITE_URL}/dezabonare?token=${token}` : `${SITE_URL}/dezabonare`;
