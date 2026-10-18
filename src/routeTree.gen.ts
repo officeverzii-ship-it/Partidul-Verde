@@ -45,6 +45,7 @@ import { Route as EvenimenteIdRouteImport } from './routes/evenimente.$id'
 import { Route as ViziuneIndexRouteImport } from './routes/viziune.index'
 import { Route as ViziuneSlugRouteImport } from './routes/viziune.$slug'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
+import { Route as AuthenticatedAdminAccessRouteImport } from './routes/_authenticated/admin.access'
 import { Route as AuthenticatedAdminArticlesRouteImport } from './routes/_authenticated/admin.articles'
 import { Route as AuthenticatedAdminBranchesRouteImport } from './routes/_authenticated/admin.branches'
 import { Route as AuthenticatedAdminCampaignsRouteImport } from './routes/_authenticated/admin.campaigns'
@@ -255,6 +256,12 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedAdminAccessRoute =
+  AuthenticatedAdminAccessRouteImport.update({
+    id: '/access',
+    path: '/access',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminArticlesRoute =
   AuthenticatedAdminArticlesRouteImport.update({
     id: '/articles',
@@ -459,6 +466,7 @@ export interface FileRoutesByFullPath {
   '/articole/': typeof ArticoleIndexRoute
   '/comunicate/': typeof ComunicateIndexRoute
   '/viziune/': typeof ViziuneIndexRoute
+  '/admin/access': typeof AuthenticatedAdminAccessRoute
   '/admin/articles': typeof AuthenticatedAdminArticlesRoute
   '/admin/branches': typeof AuthenticatedAdminBranchesRoute
   '/admin/campaigns': typeof AuthenticatedAdminCampaignsRoute
@@ -522,6 +530,7 @@ export interface FileRoutesByTo {
   '/articole': typeof ArticoleIndexRoute
   '/comunicate': typeof ComunicateIndexRoute
   '/viziune': typeof ViziuneIndexRoute
+  '/admin/access': typeof AuthenticatedAdminAccessRoute
   '/admin/articles': typeof AuthenticatedAdminArticlesRoute
   '/admin/branches': typeof AuthenticatedAdminBranchesRoute
   '/admin/campaigns': typeof AuthenticatedAdminCampaignsRoute
@@ -590,6 +599,7 @@ export interface FileRoutesById {
   '/articole/': typeof ArticoleIndexRoute
   '/comunicate/': typeof ComunicateIndexRoute
   '/viziune/': typeof ViziuneIndexRoute
+  '/_authenticated/admin/access': typeof AuthenticatedAdminAccessRoute
   '/_authenticated/admin/articles': typeof AuthenticatedAdminArticlesRoute
   '/_authenticated/admin/branches': typeof AuthenticatedAdminBranchesRoute
   '/_authenticated/admin/campaigns': typeof AuthenticatedAdminCampaignsRoute
@@ -658,6 +668,7 @@ export interface FileRouteTypes {
     | '/articole/'
     | '/comunicate/'
     | '/viziune/'
+    | '/admin/access'
     | '/admin/articles'
     | '/admin/branches'
     | '/admin/campaigns'
@@ -721,6 +732,7 @@ export interface FileRouteTypes {
     | '/articole'
     | '/comunicate'
     | '/viziune'
+    | '/admin/access'
     | '/admin/articles'
     | '/admin/branches'
     | '/admin/campaigns'
@@ -788,6 +800,7 @@ export interface FileRouteTypes {
     | '/articole/'
     | '/comunicate/'
     | '/viziune/'
+    | '/_authenticated/admin/access'
     | '/_authenticated/admin/articles'
     | '/_authenticated/admin/branches'
     | '/_authenticated/admin/campaigns'
@@ -1109,6 +1122,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/access': {
+      id: '/_authenticated/admin/access'
+      path: '/access'
+      fullPath: '/admin/access'
+      preLoaderRoute: typeof AuthenticatedAdminAccessRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/articles': {
       id: '/_authenticated/admin/articles'
       path: '/articles'
@@ -1316,6 +1336,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminAccessRoute: typeof AuthenticatedAdminAccessRoute
   AuthenticatedAdminArticlesRoute: typeof AuthenticatedAdminArticlesRoute
   AuthenticatedAdminBranchesRoute: typeof AuthenticatedAdminBranchesRoute
   AuthenticatedAdminCampaignsRoute: typeof AuthenticatedAdminCampaignsRoute
@@ -1340,6 +1361,7 @@ interface AuthenticatedAdminRouteChildren {
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminAccessRoute: AuthenticatedAdminAccessRoute,
   AuthenticatedAdminArticlesRoute: AuthenticatedAdminArticlesRoute,
   AuthenticatedAdminBranchesRoute: AuthenticatedAdminBranchesRoute,
   AuthenticatedAdminCampaignsRoute: AuthenticatedAdminCampaignsRoute,

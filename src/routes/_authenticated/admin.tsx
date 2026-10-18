@@ -18,8 +18,9 @@ export const Route = createFileRoute("/_authenticated/admin")({
   component: AdminLayout,
 });
 
-const links: { to: string; label: string; section?: Section }[] = [
+const links: { to: string; label: string; section?: Section; nationalOnly?: boolean }[] = [
   { to: "/admin", label: "Dashboard" },
+  { to: "/admin/access", label: "Utilizatori și acces", nationalOnly: true },
   { to: "/admin/articles", label: "Articole", section: "articles" },
   { to: "/admin/events", label: "Evenimente", section: "events" },
   { to: "/admin/members", label: "Membri", section: "members" },
@@ -72,7 +73,7 @@ function AdminLayout() {
           </div>
           <nav className="mt-6 grid gap-1 text-sm">
             {links
-              .filter((l) => !l.section || canAccess(roles, l.section))
+              .filter((l) => (!l.nationalOnly || roles.includes('admin_national')) && (!l.section || canAccess(roles, l.section)))
               .map((l) => (
                 <Link
                   key={l.to}

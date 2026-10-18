@@ -1,5 +1,11 @@
 # Roadmap
 
+- [x] Administrare utilizatori și roluri din panoul Adminului Național, cu filială și audit; atribuire, citire și retragere Editor verificate autentificat; 2 teste de validare trecute
+
+- [x] Corectarea destinației DuckDNS pentru resetare și testarea redirecționării de rezervă: 4 teste și verificare în browser
+- [x] Trimiterea corecției resetării parolei pe GitHub main: d0f015b
+- [ ] Activarea redirecționării de rezervă pe domeniul Lovable: necesită publicarea versiunii actualizate; Coolify necesită Redeploy
+
 - [x] Recuperare parolă: opțiune pe autentificare, pagină publică de resetare; solicitarea emailului acceptată și respingerea linkului absent verificate în browser
 - [ ] Verificarea schimbării parolei prin emailul real: necesită linkul primit de utilizator și actualizarea site-ului din Coolify
 
@@ -17,4 +23,4 @@
 - [ ] Donație EuPlătesc și email donator în afara Lovable: necesită conexiune privilegiată proprie, configurarea procesatorului, datele juridice oficiale și un serviciu de email
 - [ ] Validarea paginilor legale: necesită aprobarea responsabilului juridic pentru datele și procedurile reale
 
-Funcționalități administrative suplimentare (gestionarea rolurilor și audit) din cereri vechi nu fac parte din această reconstrucție.
+Gestionarea rolurilor din panoul Adminului Național face parte din cererea curentă.

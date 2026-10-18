@@ -10,6 +10,7 @@
 <!-- LOVABLE:END -->
 
 - Admin panel lives under `src/routes/_authenticated/admin*`, using the browser client with RLS as the security boundary; UI role gating in `src/lib/roles.ts` is cosmetic only. Why: permissions enforced in the database via `has_role`/`user_branch`.
+- Account listing and role assignment use national-admin-only database RPCs; role triggers protect self/last-admin removal and audit changes. Why: privileged account data and access changes must remain secure on both managed and self-hosted deployments without service keys.
 - Public-site nav/footer config is in `src/data/site.ts`; sample content in `src/data/content.ts`. Why: single editable source for menus.
 
 - Public pages load published database content through shared query options and a public server-function client; never use illustrative arrays for published content. Why: admin edits must be visible publicly under RLS.

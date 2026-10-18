@@ -1121,6 +1121,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_access_change: {
+        Args: {
+          _branch_id?: string
+          _email: string
+          _remove?: boolean
+          _role: Database["public"]["Enums"]["app_role"]
+        }
+        Returns: undefined
+      }
+      admin_access_list: {
+        Args: { _page?: number; _search?: string }
+        Returns: Json
+      }
       confirm_newsletter: { Args: { _token: string }; Returns: boolean }
       decrypt_sensitive: { Args: { p_cipher: string }; Returns: string }
       encrypt_sensitive: { Args: { p_text: string }; Returns: string }
