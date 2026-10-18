@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Sigla European Greens în panou verde în colțul din dreapta sus, simetric cu panoul Verzii din stânga sus; verificat la 1280, 890, 768, 390 și 320
+
 - [x] Administrare utilizatori și roluri din panoul Adminului Național, cu filială și audit; atribuire, citire și retragere Editor verificate autentificat; 2 teste de validare trecute
 - [x] Trimiterea administrării accesului pe GitHub main: 95f0577
 
