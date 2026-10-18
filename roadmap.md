@@ -1,5 +1,11 @@
 # Roadmap
 
+- [x] Portal modernizat: flux central, legitimație personală, categorii și aprecieri în forum; creare/apreciere/citire și cotizație plătită/restantă verificate autentificat
+- [x] CRM modernizat: indicatori reali, acțiuni în lot și fișă laterală de contact; etichete salvate și recitite în fișă, datele temporare eliminate
+- [x] Donații modernizate: obiectiv configurabil, progres real, impact și pași de completare; campania salvată în administrare și citită public, configurația restaurată
+- [x] Verificarea celor trei module: 9 teste trecute, compilare reușită, verificări autentificate și pe telefon; politici de filială restrictive aplicate
+- [ ] Activarea campaniei publice: necesită obiectivul, data și descrierile reale de impact; configurabile în Setări site
+
 - [x] Confirmarea conturilor pe DuckDNS: destinația formularului verificată în browser fără trimitere de email; 8 teste trecute; modificări pregătite pentru GitHub
 - [ ] Activarea confirmării pe hosting și verificarea emailului real: necesită Redeploy în Coolify și publicarea versiunii Lovable pentru redirecționarea de rezervă
 

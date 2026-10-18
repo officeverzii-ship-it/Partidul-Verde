@@ -1,5 +1,6 @@
 import { pageHead } from '@/lib/seo';
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { Users, Clock, HeartHandshake, Mail, TrendingUp } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { canAccess, useMyRoles, type Section } from "@/lib/roles";
@@ -31,31 +32,68 @@ function Dashboard() {
       const out: Record<string, number> = {};
       await Promise.all(
         visible.map(async (c) => {
-          const { count } = await supabase.from(c.table).select("id", { count: "exact", head: true });
+          const { count, error } = await supabase.from(c.table).select("id", { count: "exact", head: true });
+          if (error) throw error;
           out[c.table] = count ?? 0;
         }),
       );
-      let total = 0;
-      let monthly: { month: string; sum: number }[] = [];
-      if (canAccess(roles, "donations")) {
-        const { data } = await supabase.from("donations").select("amount, created_at").limit(1000);
-        const map = new Map<string, number>();
-        for (const d of data ?? []) {
-          total += Number(d.amount);
-          const k = d.created_at.slice(0, 7);
-          map.set(k, (map.get(k) ?? 0) + Number(d.amount));
-        }
-        monthly = [...map.entries()].sort().slice(-6).map(([month, sum]) => ({ month, sum }));
+      const now = new Date();
+      const monthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString();
+      let pending = 0;
+      if (canAccess(roles, "members")) {
+        const r = await supabase.from("members").select("id", { count: "exact", head: true }).eq("status", "in_asteptare");
+        if (r.error) throw r.error;
+        pending = r.count ?? 0;
       }
-      return { counts: out, total, monthly };
+      let campaigns = 0; let sent = 0;
+      if (canAccess(roles, "email")) {
+        for (let offset = 0; ; offset += 1000) {
+          const r = await supabase.from("email_campaigns").select("sent_count", { count: "exact" }).gte("created_at", monthStart).order("id").range(offset, offset + 999);
+          if (r.error) throw r.error;
+          campaigns = r.count ?? 0; sent += (r.data ?? []).reduce((n, c) => n + c.sent_count, 0);
+          if ((r.data?.length ?? 0) < 1000) break;
+        }
+      }
+      const enrollment = [];
+      if (canAccess(roles, "members")) {
+        for (let i = 5; i >= 0; i--) {
+          const start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - i, 1));
+          const end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - i + 1, 1));
+          const r = await supabase.from("members").select("id", { count: "exact", head: true }).gte("created_at", start.toISOString()).lt("created_at", end.toISOString());
+          if (r.error) throw r.error;
+          enrollment.push({ month: start.toLocaleDateString("ro-RO", { month: "short", timeZone: "UTC" }), count: r.count ?? 0 });
+        }
+      }
+      let total = 0;
+
+      if (canAccess(roles, "donations")) {
+        for (let offset = 0; ; offset += 1000) {
+          const r = await supabase.from("donations").select("amount").eq("status", "confirmata").eq("environment", "live").eq("currency", "RON").gte("paid_at", monthStart).order("id").range(offset, offset + 999);
+          if (r.error) throw r.error;
+          total += (r.data ?? []).reduce((n, d) => n + Number(d.amount), 0);
+          if ((r.data?.length ?? 0) < 1000) break;
+        }
+      }
+      return { counts: out, total, pending, campaigns, sent, enrollment };
     },
   });
 
-  const max = Math.max(1, ...(stats.data?.monthly.map((m) => m.sum) ?? [1]));
+  const max = Math.max(1, ...(stats.data?.enrollment.map(m => m.count) ?? [1]));
 
   return (
     <div>
-      <h1 className="font-display text-3xl font-bold">Dashboard</h1>
+      <p className="text-sm text-muted-foreground">Administrare · VERZII</p>
+      <h1 className="mt-1 font-display text-3xl font-bold">Privire de ansamblu</h1>
+      {stats.isError && <p role="alert" className="mt-4 text-destructive">Indicatorii nu au putut fi încărcați.</p>}
+      <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {[
+          { section: "members" as Section, label: "Membri înregistrați", value: stats.data?.counts['members'], icon: Users, detail: "Total în aria ta de acces" },
+          { section: "members" as Section, label: "Adeziuni în așteptare", value: stats.data?.pending, icon: Clock, detail: "Necesită validare" },
+          { section: "donations" as Section, label: "Donații · luna curentă", value: stats.data?.total.toLocaleString("ro-RO") + " lei", icon: HeartHandshake, detail: "Confirmate · plăți reale" },
+          { section: "email" as Section, label: "Campanii · luna curentă", value: stats.data?.campaigns, icon: Mail, detail: `${stats.data?.sent ?? 0} emailuri trimise` },
+        ].filter(k => canAccess(roles, k.section)).map(k => <section key={k.label} className="rounded-lg border border-border bg-card p-5"><div className="flex items-center justify-between gap-2"><p className="text-sm text-muted-foreground">{k.label}</p><k.icon size={20} className="shrink-0 text-primary" /></div><p className="mt-4 text-3xl font-bold">{stats.isLoading ? "…" : k.value}</p><p className="mt-2 text-xs text-muted-foreground">{k.detail}</p></section>)}
+      </div>
+      {canAccess(roles, "members") && <section className="mt-8 border-y border-border py-6"><h2 className="flex items-center gap-2 text-lg font-semibold"><TrendingUp size={20} className="text-primary" /> Evoluția înscrierilor</h2><div className="mt-6 grid h-40 grid-cols-6 items-end gap-3">{stats.data?.enrollment.map(m => <div key={m.month} className="flex h-full flex-col justify-end text-center"><span className="mb-2 text-sm font-semibold">{m.count}</span><div className="min-h-1 rounded-t bg-primary" style={{ height: `${Math.max(3, m.count / max * 65)}%` }} /><span className="mt-2 text-xs text-muted-foreground">{m.month}</span></div>)}</div></section>}
       {roles.length > 0 && visible.length === 0 && (
         <p className="glass mt-6 rounded-2xl p-6 text-foreground/70">
           Contul tău nu are încă acces la secțiuni administrative. Un Admin Național îți poate atribui un rol.
@@ -70,23 +108,7 @@ function Dashboard() {
         ))}
       </div>
 
-      {canAccess(roles, "donations") && (
-        <div className="glass mt-6 rounded-2xl p-6">
-          <div className="flex items-end justify-between">
-            <h2 className="font-display text-xl font-semibold">Donații pe lună</h2>
-            <p className="font-display text-2xl font-bold text-brand">{(stats.data?.total ?? 0).toLocaleString("ro-RO")} lei</p>
-          </div>
-          <div className="mt-6 flex h-40 items-end gap-3">
-            {(stats.data?.monthly ?? []).map((m) => (
-              <div key={m.month} className="flex flex-1 flex-col items-center gap-2">
-                <div className="w-full rounded-t-lg bg-brand" style={{ height: `${(m.sum / max) * 100}%` }} />
-                <span className="text-xs text-foreground/50">{m.month}</span>
-              </div>
-            ))}
-            {stats.data?.monthly.length === 0 && <p className="text-sm text-foreground/50">Nicio donație încă.</p>}
-          </div>
-        </div>
-      )}
+
     </div>
   );
 }

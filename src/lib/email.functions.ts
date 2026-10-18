@@ -2,6 +2,7 @@ import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
 import { createPublicBackendClient } from './public-backend.server';
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware';
+import { escapeHtml } from './output-safety';
 
 type Client = ReturnType<typeof createPublicBackendClient>;
 
@@ -45,15 +46,17 @@ export const previewSegment = createServerFn({ method: 'POST' })
 
 export const sendTestEmail = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
-  .inputValidator((v: unknown) => z.object({ templateId: z.string().uuid(), to: z.string().email() }).parse(v))
+  .inputValidator((v: unknown) => z.object({ templateId: z.string().uuid() }).parse(v))
   .handler(async ({ data, context }) => {
     await requireStaff(context as never);
-    const client = createPublicBackendClient();
+    const { data: { user }, error: userError } = await context.supabase.auth.getUser();
+    if (userError || !user?.email || !user.email_confirmed_at) throw new Error('Confirmă adresa contului înainte de a trimite teste.');
+    const client = context.supabase;
     const { data: tpl } = await client.from('email_templates').select('*').eq('id', data.templateId).single();
     if (!tpl) throw new Error('Șablonul nu există.');
     const { renderTemplate, sendEmail } = await import('./email.server');
     const html = renderTemplate(tpl.body_html, { prenume: 'Test', filiala: 'București', nume: 'Utilizator Test' });
-    await sendEmail(client, { to: data.to, subject: `[TEST] ${tpl.subject}`, html });
+    await sendEmail(client, { to: user.email, subject: `[TEST] ${tpl.subject}`, html });
     return { sent: true };
   });
 
@@ -131,14 +134,17 @@ export const subscribeNewsletter = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     const client = createPublicBackendClient();
     await client.rpc('upsert_contact', { _email: data.email, _full_name: data.full_name, _source: 'newsletter' });
-    const { data: token } = await client.rpc('start_newsletter_signup', { _email: data.email });
-    if (!token) throw new Error('Nu am putut înregistra abonarea. Încearcă din nou.');
+    // Token issuance is server-only; never expose pending confirmation tokens through public RPCs.
+    const admin = await adminClient();
+    const { data: token, error } = await admin.rpc('start_newsletter_signup', { _email: data.email });
+    if (error) throw new Error('Nu am putut înregistra abonarea. Încearcă din nou.');
+    if (!token) return { success: true };
     const { sendEmail, SITE_URL } = await import('./email.server');
     const url = `${SITE_URL}/confirmare-newsletter?token=${token}`;
     await sendEmail(client, {
       to: data.email,
       subject: 'Confirmă abonarea la newsletterul Partidului Verde',
-      html: `<p>Bună, ${data.full_name}!</p><p>Apasă pe linkul de mai jos pentru a confirma abonarea la newsletter:</p><p><a href="${url}">${url}</a></p><p>Dacă nu ai cerut această abonare, ignoră acest mesaj.</p>`,
+      html: `<p>Bună, ${escapeHtml(data.full_name)}!</p><p>Apasă pe linkul de mai jos pentru a confirma abonarea la newsletter:</p><p><a href="${escapeHtml(url)}">${escapeHtml(url)}</a></p><p>Dacă nu ai cerut această abonare, ignoră acest mesaj.</p>`,
     });
     return { success: true };
   });

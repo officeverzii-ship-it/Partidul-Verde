@@ -35,8 +35,11 @@ async function requiredFields(client: { from: (t: string) => any }): Promise<{ c
 }
 
 export const createDonationCheckout = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => donorSchema.parse(d))
-  .handler(async ({ data }): Promise<{ clientSecret: string } | { error: string }> => {
+  .handler(async ({ data, context }): Promise<{ clientSecret: string } | { error: string }> => {
+    const { data: verified, error: identityError } = await context.supabase.rpc('donor_identity_matches', { _cnp: data.cnp });
+    if (identityError || !verified) return { error: 'Identitatea donatorului trebuie verificată de un administrator înainte de plată. Contactează Partidul Verde.' };
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { PLAFON_ANUAL_CNP_RON, MESAJ_PLAFON } = await import("./donation-config");
 

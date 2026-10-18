@@ -1,6 +1,7 @@
 import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware';
+import { csvCell } from './output-safety';
 
 const EXPORTABLE = {
   members: { table: 'members', columns: ['full_name', 'email', 'phone', 'county', 'city', 'status', 'branch_id', 'joined_at', 'dues_paid'] },
@@ -20,11 +21,7 @@ const exportSchema = z.object({
 });
 
 function toCsv(rows: Record<string, unknown>[], columns: string[]): string {
-  const esc = (v: unknown) => {
-    const s = v == null ? '' : Array.isArray(v) ? v.join('; ') : String(v);
-    return /[",\n;]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
-  };
-  const lines = [columns.join(';'), ...rows.map((r) => columns.map((c) => esc(r[c])).join(';'))];
+  const lines = [columns.map(csvCell).join(';'), ...rows.map((r) => columns.map((c) => csvCell(r[c])).join(';'))];
   // BOM UTF-8 pentru compatibilitate Excel
   return '﻿' + lines.join('\r\n');
 }

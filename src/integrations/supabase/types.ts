@@ -364,6 +364,27 @@ export type Database = {
           },
         ]
       }
+      donor_identities: {
+        Row: {
+          cnp: string
+          user_id: string
+          verified_at: string
+          verified_by: string
+        }
+        Insert: {
+          cnp: string
+          user_id: string
+          verified_at?: string
+          verified_by?: string
+        }
+        Update: {
+          cnp?: string
+          user_id?: string
+          verified_at?: string
+          verified_by?: string
+        }
+        Relationships: []
+      }
       dues: {
         Row: {
           amount: number
@@ -661,6 +682,35 @@ export type Database = {
           },
         ]
       }
+      forum_likes: {
+        Row: {
+          created_at: string
+          id: string
+          thread_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          thread_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          thread_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forum_likes_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "forum_threads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       forum_posts: {
         Row: {
           author_id: string
@@ -700,6 +750,8 @@ export type Database = {
         Row: {
           author_id: string
           body: string
+          branch_id: string | null
+          category: string
           created_at: string
           id: string
           locked: boolean
@@ -708,6 +760,8 @@ export type Database = {
         Insert: {
           author_id: string
           body: string
+          branch_id?: string | null
+          category?: string
           created_at?: string
           id?: string
           locked?: boolean
@@ -716,12 +770,22 @@ export type Database = {
         Update: {
           author_id?: string
           body?: string
+          branch_id?: string | null
+          category?: string
           created_at?: string
           id?: string
           locked?: boolean
           title?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "forum_threads_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: false
+            referencedRelation: "branches"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       internal_events: {
         Row: {
@@ -876,6 +940,7 @@ export type Database = {
           description: string | null
           file_url: string
           id: string
+          kind: string
           min_role: string
           title: string
         }
@@ -886,6 +951,7 @@ export type Database = {
           description?: string | null
           file_url: string
           id?: string
+          kind?: string
           min_role?: string
           title: string
         }
@@ -896,6 +962,7 @@ export type Database = {
           description?: string | null
           file_url?: string
           id?: string
+          kind?: string
           min_role?: string
           title?: string
         }
@@ -1134,8 +1201,17 @@ export type Database = {
         Args: { _page?: number; _search?: string }
         Returns: Json
       }
+      admin_verify_donor_identity: {
+        Args: { _cnp: string; _email: string; _remove?: boolean }
+        Returns: undefined
+      }
       confirm_newsletter: { Args: { _token: string }; Returns: boolean }
+      crm_bulk_change: {
+        Args: { _field: string; _ids: string[]; _table: string; _value: string }
+        Returns: number
+      }
       decrypt_sensitive: { Args: { p_cipher: string }; Returns: string }
+      donor_identity_matches: { Args: { _cnp: string }; Returns: boolean }
       encrypt_sensitive: { Args: { p_text: string }; Returns: string }
       has_role: {
         Args: {
@@ -1144,7 +1220,20 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_published_media: { Args: { _name: string }; Returns: boolean }
+      my_member_card: { Args: never; Returns: Json }
       portal_access: { Args: { _user_id: string }; Returns: boolean }
+      portal_branch: { Args: never; Returns: string }
+      public_branches: {
+        Args: never
+        Returns: {
+          city: string
+          county: string
+          id: string
+          name: string
+        }[]
+      }
+      public_campaign_progress: { Args: never; Returns: Json }
       start_newsletter_signup: { Args: { _email: string }; Returns: string }
       unsubscribe_email: { Args: { _token: string }; Returns: boolean }
       upsert_contact: {

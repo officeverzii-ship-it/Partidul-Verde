@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { type StripeEnv, verifyWebhook } from "@/lib/stripe.server";
+import { escapeHtml } from '@/lib/output-safety';
 
 async function getAdmin() {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -32,7 +33,7 @@ async function markDonationPaid(session: any, env: StripeEnv) {
       await sendTransactional(supabaseAdmin, {
         to: row.donor_email,
         subject: "Confirmare donație — Partidul Verde",
-        html: `<p>Bună, ${row.donor_name},</p><p>Îți mulțumim! Am primit donația ta de <strong>${suma}</strong>${row.donation_type === "lunar" ? " (abonament lunar)" : ""}.</p><p>Conform Legii 334/2006, donația va fi raportată către Autoritatea Electorală Permanentă.</p><p>Cu recunoștință,<br/>Partidul Verde</p>`,
+        html: `<p>Bună, ${escapeHtml(row.donor_name)},</p><p>Îți mulțumim! Am primit donația ta de <strong>${suma}</strong>${row.donation_type === "lunar" ? " (abonament lunar)" : ""}.</p><p>Conform Legii 334/2006, donația va fi raportată către Autoritatea Electorală Permanentă.</p><p>Cu recunoștință,<br/>Partidul Verde</p>`,
         templateName: "confirmare-donatie",
       });
     } catch (e) {

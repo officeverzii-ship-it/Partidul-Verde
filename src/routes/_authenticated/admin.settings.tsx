@@ -1,3 +1,4 @@
+import { CampaignSettings } from "@/components/admin/CampaignSettings";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -104,6 +105,7 @@ function SettingsPage() {
           </div>
         </form>
       )}
+      {me?.roles.includes("admin_national") && <CampaignSettings />}
     </div>
   );
 }

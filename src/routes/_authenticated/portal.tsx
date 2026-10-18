@@ -18,7 +18,7 @@ export const Route = createFileRoute("/_authenticated/portal")({
 });
 
 const links = [
-  { to: "/portal", label: "Prezentare" },
+  { to: "/portal", label: "Acasă" },
   { to: "/portal/documente", label: "Documente" },
   { to: "/portal/calendar", label: "Calendar intern" },
   { to: "/portal/forum", label: "Forum" },

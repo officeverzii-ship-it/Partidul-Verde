@@ -1,6 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { mergeTags } from "@/lib/module-rules";
 import { Button } from "@/components/ui/button";
 import { canAccess, useMyRoles, type Section } from "@/lib/roles";
 
@@ -52,6 +54,13 @@ export function CrudPage({
   const [page, setPage] = useState(0);
   const [asc, setAsc] = useState(false);
   const [editing, setEditing] = useState<Row | null | "new">(null);
+  const [selected, setSelected] = useState<string[]>([]);
+  const [bulkField, setBulkField] = useState("status");
+  const [bulkValue, setBulkValue] = useState("");
+  const [notice, setNotice] = useState("");
+  const bulkFields = fields.filter(f => ["status", "branch_id", "tags"].includes(f.name) && !(table === "tasks" && f.name === "branch_id"));
+  const bulkEnabled = ["members", "volunteers", "contacts", "tasks"].includes(table);
+  const drawer = table === "contacts";
   const [err, setErr] = useState<string | null>(null);
 
   const list = useQuery({
@@ -79,6 +88,18 @@ export function CrudPage({
       qc.invalidateQueries({ queryKey: ["public-content"] });
     },
     onError: (e: Error) => setErr(e.message),
+  });
+
+  const bulk = useMutation({
+    mutationFn: async () => {
+      const field = bulkFields.find(f => f.name === bulkField) ?? bulkFields[0];
+      if (!field || !bulkValue.trim()) throw new Error("Alege o valoare pentru acțiunea în lot.");
+      const { data, error } = await supabase.rpc("crm_bulk_change", { _table: table, _ids: selected, _field: field.name, _value: field.name === "tags" ? mergeTags([], bulkValue).join(",") : bulkValue });
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: n => { setNotice(`${n} înregistrări actualizate.`); setSelected([]); setBulkValue(""); qc.invalidateQueries({ queryKey: [table] }); qc.invalidateQueries({ queryKey: ["dashboard"] }); },
+    onError: (e: Error) => setNotice(e.message),
   });
 
   const remove = useMutation({
@@ -121,6 +142,21 @@ export function CrudPage({
     return String(v);
   };
 
+  const editForm = editing ? (
+        <form key={current?.id ?? "new"} onSubmit={onSubmit} className={drawer ? "mt-5 grid gap-4" : "glass mt-5 grid gap-4 rounded-lg p-6 sm:grid-cols-2"}>
+          {fields.map((f) => {
+            const dv = current?.[f.name];
+            const defaultValue = dv == null ? "" : f.type === "datetime-local" ? new Date(String(dv)).toISOString().slice(0, 16) : f.type === "tags" && Array.isArray(dv) ? dv.join(", ") : String(dv);
+            return <label key={f.name} className={!drawer && f.type === "textarea" ? "block sm:col-span-2" : "block"}>
+              <span className="mb-1.5 block text-xs text-muted-foreground">{f.label}{f.required && " *"}</span>
+              {f.type === "textarea" ? <textarea name={f.name} rows={5} className="field" defaultValue={defaultValue} maxLength={200000} /> : f.type === "select" ? <select name={f.name} className="field" defaultValue={defaultValue}>{!f.required && <option value="">—</option>}{f.options?.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}</select> : <input name={f.name} type={f.type === "tags" ? "text" : f.type ?? "text"} step={f.type === "number" ? "0.01" : undefined} className="field" defaultValue={defaultValue} maxLength={500} />}
+            </label>;
+          })}
+          <div className={`flex gap-3 ${drawer ? "" : "sm:col-span-2"}`}><Button disabled={save.isPending}>Salvează</Button><Button type="button" variant="outline" onClick={() => setEditing(null)}>Anulează</Button></div>
+          {err && <p role="alert" className="text-sm text-destructive">{err}</p>}
+        </form>
+  ) : null;
+
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -134,44 +170,28 @@ export function CrudPage({
       </div>
 
       <div className="mt-5 flex flex-wrap gap-3">
-        <input className="field max-w-xs" placeholder="Caută…" value={q} maxLength={80} onChange={(e) => { setQ(e.currentTarget.value); setPage(0); }} />
-        <Button onClick={() => setAsc(!asc)} className="glass rounded-lg px-3 text-sm">{asc ? "Cele mai vechi" : "Cele mai noi"}</Button>
+        <input className="field max-w-xs" placeholder="Caută…" value={q} maxLength={80} onChange={(e) => { setQ(e.currentTarget.value); setPage(0); setSelected([]); }} />
+        <Button onClick={() => (setAsc(!asc), setSelected([]))} className="glass rounded-lg px-3 text-sm">{asc ? "Cele mai vechi" : "Cele mai noi"}</Button>
       </div>
 
-      {editing && (
-        <form onSubmit={onSubmit} className="glass mt-5 grid gap-4 rounded-2xl p-6 sm:grid-cols-2">
-          {fields.map((f) => {
-            const dv = current?.[f.name];
-            const defaultValue =
-              dv == null ? "" : f.type === "datetime-local" ? new Date(String(dv)).toISOString().slice(0, 16) : f.type === "tags" && Array.isArray(dv) ? dv.join(", ") : String(dv);
-            return (
-              <label key={f.name} className={f.type === "textarea" ? "block sm:col-span-2" : "block"}>
-                <span className="mb-1.5 block text-xs uppercase tracking-wider text-foreground/50">{f.label}{f.required && " *"}</span>
-                {f.type === "textarea" ? (
-                  <textarea name={f.name} rows={8} className="field" defaultValue={defaultValue} maxLength={200000} />
-                ) : f.type === "select" ? (
-                  <select name={f.name} className="field" defaultValue={defaultValue}>
-                    {!f.required && <option value="">—</option>}
-                    {f.options?.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-                  </select>
-                ) : (
-                  <input name={f.name} type={f.type ?? "text"} step={f.type === "number" ? "0.01" : undefined} className="field" defaultValue={defaultValue} maxLength={500} />
-                )}
-              </label>
-            );
-          })}
-          <div className="flex gap-3 sm:col-span-2">
-            <Button disabled={save.isPending} className="btn-brand px-5 py-2">Salvează</Button>
-            <Button type="button" onClick={() => setEditing(null)} className="glass rounded-lg px-5 py-2">Anulează</Button>
-          </div>
-          {err && <p className="text-sm text-destructive sm:col-span-2">{err}</p>}
-        </form>
-      )}
+      {drawer ? <Sheet open={Boolean(editing)} onOpenChange={open => { if (!open) setEditing(null); }}><SheetContent className="w-full overflow-y-auto sm:max-w-lg"><SheetHeader><SheetTitle>{current ? String(current['full_name']) : "Contact nou"}</SheetTitle><SheetDescription>{current ? String(current['email']) : "Fișă de contact"}</SheetDescription></SheetHeader>{editForm}</SheetContent></Sheet> : editForm}
+      {bulkEnabled && selected.length > 0 && <div className="mt-5 flex flex-wrap items-center gap-3 rounded-lg border border-primary/30 bg-secondary p-3">
+        <strong className="text-sm">{selected.length} selectate</strong>
+        <select aria-label="Acțiune în lot" className="field w-auto" value={bulkFields.some(f => f.name === bulkField) ? bulkField : bulkFields[0]?.name} onChange={e => { setBulkField(e.target.value); setBulkValue(""); }}>
+          {bulkFields.map(f => <option key={f.name} value={f.name}>{f.name === "tags" ? "Adaugă etichete" : f.label}</option>)}
+        </select>
+        {(() => { const field = bulkFields.find(f => f.name === bulkField) ?? bulkFields[0]; return field?.type === "select" ? <select aria-label="Valoare în lot" className="field w-auto max-w-full" value={bulkValue} onChange={e => setBulkValue(e.target.value)}><option value="">Selectează…</option>{field.options?.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}</select> : <input aria-label="Etichete în lot" className="field max-w-xs" placeholder="Etichete separate prin virgulă" value={bulkValue} onChange={e => setBulkValue(e.target.value)} maxLength={200} />; })()}
+        <Button disabled={bulk.isPending || !bulkValue} onClick={() => confirm(`Aplici modificarea pentru ${selected.length} înregistrări?`) && bulk.mutate()}>{bulk.isPending ? "Se aplică…" : "Aplică"}</Button>
+        <Button variant="ghost" onClick={() => setSelected([])}>Renunță</Button>
+      </div>}
+      {notice && <p role="status" className="mt-3 text-sm">{notice}</p>}
+      {list.isError && <p role="alert" className="mt-3 text-sm text-destructive">Lista nu a putut fi încărcată.</p>}
 
       <div className="glass mt-5 overflow-x-auto rounded-2xl">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border text-left text-xs uppercase tracking-wider text-foreground/50">
+              {bulkEnabled && <th className="px-4 py-3"><input type="checkbox" aria-label="Selectează pagina" checked={Boolean(list.data?.rows.length) && (list.data?.rows.every(r => selected.includes(r.id)) ?? false)} onChange={e => setSelected(e.target.checked ? (list.data?.rows.map(r => r.id) ?? []) : [])} /></th>}
               {listFields.map((f) => <th key={f.name} className="px-4 py-3">{f.label}</th>)}
               <th className="px-4 py-3" />
             </tr>
@@ -179,27 +199,28 @@ export function CrudPage({
           <tbody>
             {list.data?.rows.map((r) => (
               <tr key={r.id} className="border-b border-border/50 last:border-0">
+                {bulkEnabled && <td className="px-4 py-3"><input type="checkbox" aria-label={`Selectează ${r[searchField]}`} checked={selected.includes(r.id)} onChange={e => setSelected(e.target.checked ? [...selected, r.id] : selected.filter(id => id !== r.id))} /></td>}
                 {listFields.map((f) => <td key={f.name} className="px-4 py-3">{display(f, r[f.name])}</td>)}
                 <td className="whitespace-nowrap px-4 py-3 text-right">
-                  <Button onClick={() => { setErr(null); setEditing(r); }} className="text-accent hover:underline">Editează</Button>
-                  <Button onClick={() => confirm("Ștergi înregistrarea?") && remove.mutate(r.id)} className="ml-3 text-destructive hover:underline">Șterge</Button>
+                  <Button variant="ghost" onClick={() => { setErr(null); setEditing(r); }} className="text-primary">Editează</Button>
+                  <Button variant="ghost" onClick={() => confirm("Ștergi înregistrarea?") && remove.mutate(r.id)} className="ml-3 text-destructive">Șterge</Button>
                 </td>
               </tr>
             ))}
             {list.data?.rows.length === 0 && (
-              <tr><td colSpan={listFields.length + 1} className="px-4 py-8 text-center text-foreground/50">Nicio înregistrare.</td></tr>
+              <tr><td colSpan={listFields.length + (bulkEnabled ? 2 : 1)} className="px-4 py-8 text-center text-foreground/50">Nicio înregistrare.</td></tr>
             )}
             {list.isLoading && (
-              <tr><td colSpan={listFields.length + 1} className="px-4 py-8 text-center text-foreground/50">Se încarcă…</td></tr>
+              <tr><td colSpan={listFields.length + (bulkEnabled ? 2 : 1)} className="px-4 py-8 text-center text-foreground/50">Se încarcă…</td></tr>
             )}
           </tbody>
         </table>
       </div>
 
       <div className="mt-4 flex items-center justify-end gap-3 text-sm">
-        <Button disabled={page === 0} onClick={() => setPage(page - 1)} className="glass rounded-lg px-3 py-1 disabled:opacity-40">←</Button>
+        <Button disabled={page === 0} onClick={() => (setPage(page - 1), setSelected([]))} className="glass rounded-lg px-3 py-1 disabled:opacity-40">←</Button>
         <span className="text-foreground/60">{page + 1} / {pages}</span>
-        <Button disabled={page + 1 >= pages} onClick={() => setPage(page + 1)} className="glass rounded-lg px-3 py-1 disabled:opacity-40">→</Button>
+        <Button disabled={page + 1 >= pages} onClick={() => (setPage(page + 1), setSelected([]))} className="glass rounded-lg px-3 py-1 disabled:opacity-40">→</Button>
       </div>
     </div>
   );

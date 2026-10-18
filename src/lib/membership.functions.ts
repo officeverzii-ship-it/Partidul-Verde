@@ -4,8 +4,8 @@ import {membershipSchema} from './membership-schema';
 export const submitMembership=createServerFn({method:'POST'}).inputValidator((v:unknown)=>membershipSchema.parse(v)).handler(async({data})=>{
  const {createPublicBackendClient}=await import('./public-backend.server');
  const client=createPublicBackendClient();
- const {data:branches}=await client.from('branches').select('id').eq('county',data.county).limit(1);
- const branchId=branches?.[0]?.id??null;
+ const {data:branches}=await client.rpc('public_branches');
+ const branchId=branches?.find(b=>b.county===data.county)?.id??null;
 
  // Datele sensibile (CNP, adresă) se salvează criptat; cele în clar rămân pentru compatibilitate cu triggerul de validare existent.
  const {data:encCnp}=await client.rpc('encrypt_sensitive' as never,{p_text:data.cnp} as never);
@@ -21,7 +21,7 @@ export const submitMembership=createServerFn({method:'POST'}).inputValidator((v:
    cnp_encrypted:(encCnp as string|null)??null,
    address_encrypted:(encAddr as string|null)??null,
  } as never);
- if(error)throw new Error(`Cererea nu a putut fi înregistrată. Verifică datele și încearcă din nou. [${error.message}]`);
+ if(error)throw new Error('Cererea nu a putut fi înregistrată. Verifică datele și încearcă din nou.');
 
  // Deduplicare contact CRM după email (prin funcția securizată; anonimii nu citesc contactele)
  await client.rpc('upsert_contact',{

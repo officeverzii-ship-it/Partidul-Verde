@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 import { z } from "zod";
 import { isAdultCnp, isValidCnp } from "./cnp";
+import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware';
 
 const schema = z.object({
   amount: z.number().min(10).max(100000),
@@ -19,8 +20,11 @@ const schema = z.object({
 export type DonationInput = z.infer<typeof schema>;
 
 export const startDonation = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => schema.parse(d))
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
+    const { data: verified, error: identityError } = await context.supabase.rpc('donor_identity_matches', { _cnp: data.cnp });
+    if (identityError || !verified) return { ok: false as const, error: 'Identitatea donatorului trebuie verificată de un administrator înainte de plată. Contactează Partidul Verde.' };
     const mid = process.env["EUPLATESC_MID"];
     const key = process.env["EUPLATESC_KEY"];
     if (!mid || !key) {

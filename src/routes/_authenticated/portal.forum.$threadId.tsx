@@ -1,3 +1,6 @@
+import { Button } from "@/components/ui/button";
+import { ThumbsUp } from "lucide-react";
+import { forumCategories } from "@/lib/module-rules";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -10,6 +13,8 @@ export const Route = createFileRoute("/_authenticated/portal/forum/$threadId")({
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { title: "Discuție — Forum intern" },
+      { property: "og:title", content: "Discuție — Forum intern Partidul Verde" },
+      { property: "og:description", content: "Discuție pe forumul intern al membrilor." },
       { name: "description", content: "Discuție pe forumul intern al membrilor." },
       { name: "robots", content: "noindex" },
     ],
@@ -33,12 +38,31 @@ function Thread() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("forum_threads")
-        .select("id, title, body, author_id, locked, created_at")
+        .select("id, title, body, author_id, locked, created_at, category")
         .eq("id", threadId)
         .single();
       if (error) throw error;
       return data;
     },
+  });
+
+  const likes = useQuery({
+    queryKey: ["forum-likes", threadId],
+    queryFn: async () => {
+      const [r, u] = await Promise.all([supabase.from("forum_likes").select("id,user_id").eq("thread_id", threadId), supabase.auth.getUser()]);
+      if (r.error) throw r.error;
+      return { count: r.data?.length ?? 0, mine: r.data?.find(l => l.user_id === u.data.user?.id) };
+    },
+  });
+  const like = useMutation({
+    mutationFn: async () => {
+      const { data: u } = await supabase.auth.getUser();
+      if (!u.user) throw new Error("Nu ești autentificat.");
+      const r = likes.data?.mine ? await supabase.from("forum_likes").delete().eq("id", likes.data.mine.id) : await supabase.from("forum_likes").insert({ thread_id: threadId, user_id: u.user.id });
+      if (r.error) throw r.error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["forum-likes", threadId] }),
+    onError: (e: Error) => setError(e.message),
   });
 
   const posts = useQuery({
@@ -94,24 +118,28 @@ function Thread() {
 
   return (
     <div>
-      <Link to="/portal/forum" className="text-sm text-accent hover:underline">← Înapoi la forum</Link>
+      <Link to="/portal/forum" className="text-sm text-primary hover:underline">← Înapoi la forum</Link>
       <div className="mt-4 flex flex-wrap items-start justify-between gap-3">
         <h2 className="font-display text-2xl font-bold">{t.title}</h2>
         {canModerate && (
-          <button
+          <Button
+            variant="outline"
             onClick={() => toggleLocked.mutate(!t.locked)}
             className="rounded-lg border border-border px-3 py-1.5 text-xs text-foreground/70 hover:text-foreground"
           >
             {t.locked ? "Redeschide subiectul" : "Închide subiectul"}
-          </button>
+          </Button>
         )}
       </div>
 
+      <p className="mt-3 text-xs font-medium text-primary">{forumCategories[t.category as keyof typeof forumCategories]} · {t.locked ? "Discuție închisă" : "Discuție deschisă"}</p>
       <div className="glass mt-4 rounded-2xl p-5">
         <p className="whitespace-pre-wrap text-foreground/80">{t.body}</p>
         <p className="mt-2 text-xs text-foreground/40">{new Date(t.created_at).toLocaleString("ro-RO")}</p>
       </div>
 
+      <Button variant={likes.data?.mine ? "secondary" : "outline"} className="mt-3" disabled={like.isPending} aria-pressed={Boolean(likes.data?.mine)} onClick={() => like.mutate()}><ThumbsUp size={16} /> {likes.data?.count ?? 0} aprecieri</Button>
+      {error && <p role="alert" className="mt-3 text-destructive">{error}</p>}
       <div className="mt-4 grid gap-3">
         {(posts.data ?? []).map((p) => (
           <div key={p.id} className={`glass rounded-2xl p-5 ${p.hidden ? "opacity-50" : ""}`}>
@@ -120,14 +148,15 @@ function Thread() {
             </p>
             <div className="mt-2 flex items-center gap-3 text-xs text-foreground/40">
               <span>{new Date(p.created_at).toLocaleString("ro-RO")}</span>
-              {p.hidden && canModerate && <span className="text-yellow-300">ascuns</span>}
+              {p.hidden && canModerate && <span className="text-muted-foreground">ascuns</span>}
               {canModerate && (
-                <button
+                <Button
+                  variant="ghost"
                   onClick={() => toggleHidden.mutate({ id: p.id, hidden: !p.hidden })}
                   className="text-accent hover:underline"
                 >
                   {p.hidden ? "Afișează" : "Ascunde"}
-                </button>
+                </Button>
               )}
             </div>
           </div>
@@ -147,10 +176,10 @@ function Thread() {
           }}
         >
           <textarea rows={3} className="rounded-lg border border-border bg-transparent px-3 py-2" placeholder="Răspunsul tău" value={body} onChange={(e) => setBody(e.target.value)} />
-          {error && <p className="text-sm text-red-400">{error}</p>}
-          <button disabled={reply.isPending} className="w-fit rounded-lg bg-brand px-4 py-2 text-sm font-semibold">
+          {error && <p className="text-sm text-destructive">{error}</p>}
+          <Button disabled={reply.isPending} className="w-fit rounded-lg bg-brand px-4 py-2 text-sm font-semibold">
             {reply.isPending ? "Se trimite…" : "Trimite răspunsul"}
-          </button>
+          </Button>
         </form>
       )}
     </div>

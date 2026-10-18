@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { roleLabels, useMyRoles, type AppRole } from '@/lib/roles';
 import { accessRoles, accessSchema } from '@/lib/access-schema';
 import { pageHead } from '@/lib/seo';
+import { DonorIdentityVerification } from '@/components/admin/DonorIdentityVerification';
 
 export const Route = createFileRoute('/_authenticated/admin/access')({
   head: () => pageHead('Utilizatori și acces', 'Gestionarea securizată a rolurilor Partidului Verde.', '/admin/access'),
@@ -79,5 +80,6 @@ function AccessPage() {
       {list.data?.users.length === 0 && <tr><td colSpan={2} className="py-6">Niciun cont găsit.</td></tr>}
     </tbody></table></div>
     <div className="mt-4 flex items-center justify-end gap-3"><Button variant="outline" aria-label="Pagina precedentă" disabled={page === 0} onClick={() => setPage(p => p - 1)}>←</Button><span>{page + 1} / {pages}</span><Button variant="outline" aria-label="Pagina următoare" disabled={page + 1 >= pages} onClick={() => setPage(p => p + 1)}>→</Button></div>
+    <DonorIdentityVerification />
   </div>;
 }

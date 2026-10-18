@@ -1,0 +1,1 @@
+ALTER POLICY "site settings public read" ON public.site_settings USING (key IN ('site','menu','footer','donation_fields','donation_campaign','email'));

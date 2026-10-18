@@ -125,10 +125,11 @@ function ContactsAdmin() {
           { name: "phone", label: "Telefon", inList: true },
           { name: "county", label: "Județ", inList: true },
           { name: "city", label: "Localitate" },
-          { name: "source", label: "Sursă", type: "select", inList: true, options: [
+          { name: "source", label: "Sursă", type: "select", required: true, inList: true, options: [
+            { value: "manual", label: "Manual" },
             { value: "adeziune", label: "Adeziune" }, { value: "voluntar", label: "Voluntar" },
             { value: "eveniment", label: "Eveniment" }, { value: "contact", label: "Contact" },
-            { value: "newsletter", label: "Newsletter" }, { value: "import", label: "Import" }, { value: "manual", label: "Manual" },
+            { value: "newsletter", label: "Newsletter" }, { value: "import", label: "Import" },
           ] },
           { name: "tags", label: "Tag-uri", type: "tags", inList: true },
           { name: "branch_id", label: "Filială", type: "select", options: branches, inList: true },

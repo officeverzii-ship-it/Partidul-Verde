@@ -5,9 +5,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { canAccess, useMyRoles } from "@/lib/roles";
 import { sendTestEmail } from "@/lib/email.functions";
+import { pageHead } from '@/lib/seo';
 
 export const Route = createFileRoute("/_authenticated/admin/email-templates")({
-  head: () => ({ meta: [{ title: "Șabloane email — Admin" }, { name: "robots", content: "noindex" }] }),
+  head: () => pageHead('Șabloane email', 'Administrarea șabloanelor și testarea emailurilor Partidului Verde.', '/admin/email-templates'),
   component: Page,
 });
 
@@ -17,7 +18,6 @@ function Page() {
   const { data: me, isLoading } = useMyRoles();
   const qc = useQueryClient();
   const [editing, setEditing] = useState<Tpl | "new" | null>(null);
-  const [testTo, setTestTo] = useState("");
   const [msg, setMsg] = useState<string | null>(null);
 
   const list = useQuery({
@@ -51,7 +51,7 @@ function Page() {
   const test = useMutation({
     mutationFn: async () => {
       if (!editing || editing === "new") throw new Error("Salvează mai întâi șablonul.");
-      await sendTestEmail({ data: { templateId: editing.id, to: testTo } });
+      await sendTestEmail({ data: { templateId: editing.id } });
     },
     onSuccess: () => setMsg("Emailul de test a fost trimis."),
     onError: (e: Error) => setMsg(e.message),
@@ -105,8 +105,8 @@ function Page() {
             <Button type="button" onClick={() => setEditing(null)} className="glass rounded-lg px-5 py-2">Anulează</Button>
             {cur && (
               <span className="flex items-center gap-2">
-                <input className="field max-w-xs" type="email" placeholder="email@test.ro" value={testTo} onChange={(e) => setTestTo(e.currentTarget.value)} />
-                <Button type="button" disabled={test.isPending || !testTo} onClick={() => { setMsg(null); test.mutate(); }} className="glass rounded-lg px-4 py-2">Trimite test</Button>
+                <span className="text-sm">Testul se trimite la adresa contului tău.</span>
+                <Button type="button" disabled={test.isPending} onClick={() => { setMsg(null); test.mutate(); }} className="glass rounded-lg px-4 py-2">Trimite test</Button>
               </span>
             )}
           </div>

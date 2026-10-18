@@ -22,6 +22,7 @@ function Documents() {
   const { data: me } = useMyRoles();
   const isStaff = (me?.roles ?? []).some((r) => STAFF.includes(r));
   const qc = useQueryClient();
+  const [kind, setKind] = useState("procedura");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [fileUrl, setFileUrl] = useState("");
@@ -55,7 +56,7 @@ function Documents() {
     mutationFn: async () => {
       const { data: u } = await supabase.auth.getUser();
       const { error } = await supabase.from("portal_documents").insert({
-        title,
+        title, kind,
         description: description || null,
         file_url: fileUrl,
         min_role: minRole,
@@ -92,7 +93,8 @@ function Documents() {
             add.mutate();
           }}
         >
-          <h3 className="font-semibold">Adaugă document</h3>
+          <h3 className="font-semibold">Adaugă document sau anunț</h3>
+          <select aria-label="Tip document" className="field" value={kind} onChange={e => setKind(e.target.value)}><option value="procedura">Procedură</option><option value="anunt">Anunț oficial</option></select>
           <input className="rounded-lg border border-border bg-transparent px-3 py-2" placeholder="Titlu" value={title} onChange={(e) => setTitle(e.target.value)} />
           <input className="rounded-lg border border-border bg-transparent px-3 py-2" placeholder="Descriere (opțional)" value={description} onChange={(e) => setDescription(e.target.value)} />
           <input className="rounded-lg border border-border bg-transparent px-3 py-2" placeholder="Adresa fișierului (din Biblioteca media)" value={fileUrl} onChange={(e) => setFileUrl(e.target.value)} />

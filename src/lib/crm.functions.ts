@@ -1,5 +1,6 @@
 import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
+import { escapeHtml } from './output-safety';
 
 const email = z.string().trim().email('Email invalid').max(255);
 const name = z.string().trim().min(2, 'Numele este prea scurt').max(100);
@@ -41,7 +42,7 @@ async function upsertContact(
   client: BackendClient,
   data: { email: string; full_name: string; phone?: string | null; county?: string | null; source: string; branch_id?: string | null; member_id?: string | null },
 ) {
-  // Upsert prin funcția securizată: anonimii pot crea/actualiza doar propriile câmpuri, fără citirea contactelor.
+  // Public submissions may create new contacts, never overwrite an existing email match.
   const { data: id, error } = await client.rpc('upsert_contact', {
     _email: data.email,
     _full_name: data.full_name,
@@ -58,7 +59,7 @@ async function upsertContact(
 async function queueConfirmationEmail(client: BackendClient, to: string, subject: string, body: string) {
   // Tranzacțional: se trimite efectiv prin Resend; rezultatul se jurnalizează în email_messages.
   const { sendTransactional } = await import('./email.functions');
-  await sendTransactional(client, { to, subject, html: `<p>${body}</p>`, templateName: 'confirmare-formular' });
+  await sendTransactional(client, { to, subject, html: `<p>${escapeHtml(body)}</p>`, templateName: 'confirmare-formular' });
 }
 
 export const submitVolunteer = createServerFn({ method: 'POST' })

@@ -24,7 +24,7 @@ function MembersAdmin() {
         { name: "branch_id", label: "Filială", type: "select", options: branches, inList: true },
         { name: "role", label: "Rol în partid", required: true },
         { name: "status", label: "Status", type: "select", required: true, inList: true, options: [
-          { value: "in_asteptare", label: "În așteptare" }, { value: "activ", label: "Activ" }, { value: "suspendat", label: "Suspendat" }, { value: "retras", label: "Retras" },
+          { value: "in_asteptare", label: "În așteptare" }, { value: "aprobat", label: "Aprobat" }, { value: "activ", label: "Activ" }, { value: "suspendat", label: "Suspendat" }, { value: "retras", label: "Retras" },
         ] },
         { name: "joined_at", label: "Data înscrierii", type: "date", inList: true },
         { name: "dues_paid", label: "Cotizații plătite (lei)", type: "number" },

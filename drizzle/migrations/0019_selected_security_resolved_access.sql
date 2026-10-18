@@ -1,0 +1,17 @@
+CREATE TABLE public.donor_identities(user_id uuid PRIMARY KEY,cnp text NOT NULL,verified_by uuid NOT NULL DEFAULT auth.uid(),verified_at timestamptz NOT NULL DEFAULT now());
+GRANT SELECT,INSERT,UPDATE,DELETE ON public.donor_identities TO authenticated;
+GRANT ALL ON public.donor_identities TO service_role;
+ALTER TABLE public.donor_identities ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "national manages verified donor identities" ON public.donor_identities FOR ALL TO authenticated USING(public.has_role(auth.uid(),'admin_national')) WITH CHECK(public.has_role(auth.uid(),'admin_national') AND verified_by=auth.uid());
+CREATE FUNCTION public.donor_identity_matches(_cnp text) RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path=public AS $$ SELECT EXISTS(SELECT 1 FROM public.donor_identities WHERE user_id=auth.uid() AND cnp=_cnp); $$;
+REVOKE ALL ON FUNCTION public.donor_identity_matches(text) FROM PUBLIC,anon;
+GRANT EXECUTE ON FUNCTION public.donor_identity_matches(text) TO authenticated;
+ALTER POLICY "branches public read" ON public.branches TO authenticated USING(public.has_role(auth.uid(),'admin_national') OR public.has_role(auth.uid(),'editor') OR public.has_role(auth.uid(),'coordonator_voluntari') OR (public.has_role(auth.uid(),'admin_filiala') AND id=public.user_branch(auth.uid())));
+CREATE FUNCTION public.public_branches() RETURNS TABLE(id uuid,name text,city text,county text) LANGUAGE sql STABLE SECURITY DEFINER SET search_path=public AS $$ SELECT b.id,b.name,b.city,b.county FROM public.branches b ORDER BY b.county; $$;
+REVOKE ALL ON FUNCTION public.public_branches() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.public_branches() TO anon,authenticated,service_role;
+CREATE FUNCTION public.is_published_media(_name text) RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path=public AS $$ SELECT EXISTS(SELECT 1 FROM public.articles a WHERE a.status='publicat' AND (split_part(a.image_url,'?',1) LIKE '%/storage/v1/object/public/media/'||_name OR split_part(a.image_url,'?',1) LIKE '%/storage/v1/object/sign/media/'||_name OR split_part(a.pdf_url,'?',1) LIKE '%/storage/v1/object/public/media/'||_name OR split_part(a.pdf_url,'?',1) LIKE '%/storage/v1/object/sign/media/'||_name)) OR EXISTS(SELECT 1 FROM public.site_pages p WHERE p.status='publicat' AND (split_part(p.og_image,'?',1) LIKE '%/storage/v1/object/public/media/'||_name OR split_part(p.og_image,'?',1) LIKE '%/storage/v1/object/sign/media/'||_name OR position('/storage/v1/object/public/media/'||_name in p.content)>0 OR position('/storage/v1/object/sign/media/'||_name in p.content)>0)); $$;
+REVOKE ALL ON FUNCTION public.is_published_media(text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.is_published_media(text) TO anon,authenticated,service_role;
+ALTER POLICY "media public read" ON storage.objects USING(bucket_id='media' AND public.is_published_media(name));
+CREATE POLICY "staff reads unpublished media" ON storage.objects FOR SELECT TO authenticated USING(bucket_id='media' AND (public.has_role(auth.uid(),'admin_national') OR public.has_role(auth.uid(),'editor')));

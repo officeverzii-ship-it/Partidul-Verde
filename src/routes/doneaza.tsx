@@ -1,3 +1,8 @@
+import { Button } from "@/components/ui/button";
+import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
+import { ArrowRight, ArrowLeft, Leaf, ShieldCheck } from "lucide-react";
+import { getCampaignProgress } from "@/lib/campaign.functions";
+import { campaignPercent } from "@/lib/module-rules";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState, type FormEvent } from "react";
@@ -8,6 +13,8 @@ import { Field } from "@/components/site/Form";
 import { isAdultCnp, isValidCnp } from "@/lib/cnp";
 import { createDonationCheckout } from "@/lib/payments.functions";
 import { getStripe, getStripeEnvironment, isTestMode } from "@/lib/stripe";
+
+const campaignOptions = queryOptions({ queryKey: ["campaign-progress"], queryFn: () => getCampaignProgress() });
 
 export const Route = createFileRoute("/doneaza")({
   validateSearch: z.object({ status: z.enum(["succes", "esuat"]).optional() }),
@@ -24,6 +31,9 @@ export const Route = createFileRoute("/doneaza")({
       { property: "og:description", content: "Donație securizată cu cardul, unică sau lunară, conformă Legii 334/2006." },
     ],
   }),
+  loader: ({ context }) => context.queryClient.ensureQueryData(campaignOptions),
+  errorComponent: () => <Layout><p role="alert" className="content-width py-12">Donațiile nu au putut fi încărcate. Reîncearcă.</p></Layout>,
+  notFoundComponent: () => <p>Pagina nu este disponibilă.</p>,
   component: Doneaza,
 });
 
@@ -51,7 +61,7 @@ function CardLogo({ label }: { label: string }) {
 function TestModeBanner() {
   if (!isTestMode()) return null;
   return (
-    <div className="w-full border-b border-amber-300/40 bg-amber-100 px-4 py-2 text-center text-sm text-amber-900">
+    <div className="w-full border-b border-accent/40 bg-accent/20 px-4 py-2 text-center text-sm text-foreground">
       Plățile din această versiune sunt în mod de test — nu se debitează bani reali.
     </div>
   );
@@ -59,6 +69,8 @@ function TestModeBanner() {
 
 function Doneaza() {
   const { status } = Route.useSearch();
+  const { data: campaign } = useSuspenseQuery(campaignOptions);
+  const [step, setStep] = useState(1);
   const start = useServerFn(createDonationCheckout);
   const [preset, setPreset] = useState<number | null>(100);
   const [custom, setCustom] = useState("");
@@ -80,6 +92,13 @@ function Doneaza() {
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
+    if (step === 1) {
+      if (!Number.isFinite(amount) || amount < 10 || amount > 100000) return setError("Alege o sumă între 10 și 100.000 RON.");
+      const { supabase } = await import('@/integrations/supabase/client');
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return setError('Autentifică-te și solicită verificarea identității înainte de plată.');
+      setStep(2); return;
+    }
     if (!Number.isFinite(amount) || amount < 10) return setError("Suma minimă este 10 RON.");
     if (amount > 100000) return setError("Pentru sume mai mari, te rugăm să ne contactezi.");
     for (const k of ["fullName", "cnp", "street", "city", "county", "email", "phone"])
@@ -126,11 +145,12 @@ function Doneaza() {
       <TestModeBanner />
       <section className="mx-auto max-w-3xl px-6 pt-14 pb-6 text-center">
         <h1 className="font-display text-4xl font-bold leading-[1.05] sm:text-5xl">
-          Susține viziunea noastră <span className="text-brand">pentru România</span>
+          Donează pentru <span className="text-brand">Partidul Verde</span>
         </h1>
         <p className="mx-auto mt-5 max-w-xl text-lg text-foreground/70">
           Fiecare donație finanțează campanii pentru aer curat, energie verde și comunități implicate. Transparent și legal.
         </p>
+        <p className="mt-4 text-sm text-muted-foreground">Plata necesită un cont autentificat și identitatea verificată de organizație. <Link to="/auth" className="text-brand underline">Autentifică-te</Link> sau <Link to="/contact" className="text-brand underline">solicită verificarea identității</Link>.</p>
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           <Badge>Plăți securizate cu cardul</Badge>
           <Badge>Donație unică sau lunară</Badge>
@@ -148,6 +168,7 @@ function Doneaza() {
         </div>
       )}
 
+      {campaign && <section className="mx-auto max-w-3xl px-6 pt-6" aria-label="Progres campanie"><div className="flex flex-wrap items-end justify-between gap-3"><div><p className="flex items-center gap-2 text-sm text-primary"><Leaf size={16} /> Campanie verde</p><h2 className="mt-1 text-xl font-bold">{campaign.title}</h2></div><p className="text-sm"><strong>{campaign.total.toLocaleString("ro-RO")} RON</strong> / {campaign.goal.toLocaleString("ro-RO")} RON</p></div><div role="progressbar" aria-label={campaign.title} aria-valuemin={0} aria-valuemax={100} aria-valuenow={campaignPercent(campaign.total, campaign.goal)} className="mt-4 h-3 overflow-hidden rounded-full bg-secondary"><div className="h-full bg-primary transition-all" style={{ width: `${campaignPercent(campaign.total, campaign.goal)}%` }} /></div><p className="mt-2 text-xs text-muted-foreground">{campaign.count} donații confirmate · Exclusiv plăți reale în RON, începând cu {new Date(campaign.since).toLocaleDateString("ro-RO")}</p></section>}
       <section className="mx-auto max-w-3xl px-6 py-8">
         {clientSecret ? (
           <div className="glass rounded-3xl p-4 sm:p-6">
@@ -156,35 +177,40 @@ function Doneaza() {
             </EmbeddedCheckoutProvider>
           </div>
         ) : (
-        <form onSubmit={submit} className="glass space-y-8 rounded-3xl p-6 sm:p-8" noValidate>
-          <div>
+        <form onSubmit={submit} className="space-y-8 border-t border-border pt-6" noValidate>
+          <ol className="flex flex-wrap items-center gap-5 border-b border-border pb-4 text-sm"><li className={step === 1 ? "font-bold text-primary" : "text-muted-foreground"}>1 · Sumă</li><li className={step === 2 ? "font-bold text-primary" : "text-muted-foreground"}>2 · Date și declarații</li><li className="text-muted-foreground">3 · Plata securizată</li></ol>
+          <div hidden={step !== 1}>
             <h2 className="font-display text-xl font-semibold">1. Alege tipul și suma</h2>
             <div className="mt-4 grid grid-cols-2 gap-3">
-              <button
+              <Button
                 type="button"
                 onClick={() => setDonationType("unic")}
-                className={donationType === "unic" ? "btn-brand py-3" : "glass rounded-xl py-3 font-semibold"}
+                variant={donationType === "unic" ? "default" : "outline"}
+                aria-pressed={donationType === "unic"}
               >
                 Donație unică
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
                 onClick={() => setDonationType("lunar")}
-                className={donationType === "lunar" ? "btn-brand py-3" : "glass rounded-xl py-3 font-semibold"}
+                variant={donationType === "lunar" ? "default" : "outline"}
+                aria-pressed={donationType === "lunar"}
               >
                 Donație lunară
-              </button>
+              </Button>
             </div>
             <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
               {presets.map((p) => (
-                <button
+                <Button
                   type="button"
                   key={p}
                   onClick={() => { setPreset(p); setCustom(""); }}
-                  className={!custom && preset === p ? "btn-brand py-3" : "glass rounded-xl py-3 font-semibold"}
+                  aria-pressed={!custom && preset === p}
+                  className={`h-auto min-h-24 flex-col whitespace-normal p-4 ${!custom && preset === p ? "bg-primary text-primary-foreground" : "border border-border bg-card text-foreground hover:bg-secondary"}`}
                 >
-                  {p} RON
-                </button>
+                  <span className="font-bold">{p} RON</span>
+                  {campaign?.impacts?.[String(p)] && <span className="mt-2 block text-xs font-normal leading-relaxed">{campaign.impacts[String(p)]}</span>}
+                </Button>
               ))}
             </div>
             <div className="mt-3">
@@ -206,7 +232,8 @@ function Doneaza() {
             )}
           </div>
 
-          <div>
+          <div hidden={step !== 2}>
+            <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4"><p className="font-bold">{amount} RON{donationType === "lunar" ? " / lună" : ""}</p><Button type="button" variant="outline" onClick={() => { setStep(1); setError(null); }}><ArrowLeft size={16} /> Modifică suma</Button></div>
             <h2 className="font-display text-xl font-semibold">2. Datele donatorului</h2>
             <p className="mt-2 rounded-xl border border-accent/30 bg-accent/10 px-4 py-3 text-sm text-foreground/80">
               Conform Legii 334/2006, partidele au obligația de a identifica donatorii și de a raporta donațiile către
@@ -225,7 +252,7 @@ function Doneaza() {
             </div>
           </div>
 
-          <div className="space-y-4">
+          <div hidden={step !== 2} className="space-y-4">
             <label className="flex gap-3 text-sm text-foreground/80">
               <input type="checkbox" className="mt-1 size-4 accent-[var(--brand)]" checked={citizenship} onChange={(e) => setCitizenship(e.currentTarget.checked)} />
               <span>
@@ -245,9 +272,10 @@ function Doneaza() {
           {error && <p className="rounded-xl border border-destructive/50 bg-destructive/15 px-4 py-3 text-sm">{error}</p>}
 
           <div className="text-center">
-            <button disabled={busy} className="btn-brand w-full py-4 text-lg disabled:opacity-60">
-              {busy ? "Se pregătește plata…" : `Donează în siguranță cu cardul${amount >= 10 ? ` · ${amount} RON${donationType === "lunar" ? "/lună" : ""}` : ""}`}
-            </button>
+            <Button disabled={busy} className="h-auto w-full whitespace-normal py-4 text-base disabled:opacity-60">
+              {step === 1 ? <ArrowRight size={18} /> : <ShieldCheck size={18} />}
+              {busy ? "Se pregătește plata…" : step === 1 ? "Continuă cu datele donatorului" : `Donează în siguranță cu cardul${amount >= 10 ? ` · ${amount} RON${donationType === "lunar" ? "/lună" : ""}` : ""}`}
+            </Button>
             <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
               <CardLogo label="VISA" />
               <CardLogo label="Mastercard" />
