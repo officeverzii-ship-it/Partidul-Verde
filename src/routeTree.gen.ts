@@ -28,6 +28,7 @@ import { Route as MediaRouteImport } from './routes/media'
 import { Route as MembruRouteImport } from './routes/membru'
 import { Route as MisiuneRouteImport } from './routes/misiune'
 import { Route as Newsletter2RouteImport } from './routes/newsletter-2'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TermeniSiConditiiRouteImport } from './routes/termeni-si-conditii'
 import { Route as ViziuneRouteImport } from './routes/viziune'
@@ -166,6 +167,11 @@ const MisiuneRoute = MisiuneRouteImport.update({
 const Newsletter2Route = Newsletter2RouteImport.update({
   id: '/newsletter-2',
   path: '/newsletter-2',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -437,6 +443,7 @@ export interface FileRoutesByFullPath {
   '/membru': typeof MembruRoute
   '/misiune': typeof MisiuneRoute
   '/newsletter-2': typeof Newsletter2Route
+  '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termeni-si-conditii': typeof TermeniSiConditiiRoute
   '/viziune': typeof ViziuneRouteWithChildren
@@ -502,6 +509,7 @@ export interface FileRoutesByTo {
   '/membru': typeof MembruRoute
   '/misiune': typeof MisiuneRoute
   '/newsletter-2': typeof Newsletter2Route
+  '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termeni-si-conditii': typeof TermeniSiConditiiRoute
   '/voluntar': typeof VoluntarRoute
@@ -566,6 +574,7 @@ export interface FileRoutesById {
   '/membru': typeof MembruRoute
   '/misiune': typeof MisiuneRoute
   '/newsletter-2': typeof Newsletter2Route
+  '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termeni-si-conditii': typeof TermeniSiConditiiRoute
   '/viziune': typeof ViziuneRouteWithChildren
@@ -633,6 +642,7 @@ export interface FileRouteTypes {
     | '/membru'
     | '/misiune'
     | '/newsletter-2'
+    | '/reset-password'
     | '/sitemap.xml'
     | '/termeni-si-conditii'
     | '/viziune'
@@ -698,6 +708,7 @@ export interface FileRouteTypes {
     | '/membru'
     | '/misiune'
     | '/newsletter-2'
+    | '/reset-password'
     | '/sitemap.xml'
     | '/termeni-si-conditii'
     | '/voluntar'
@@ -761,6 +772,7 @@ export interface FileRouteTypes {
     | '/membru'
     | '/misiune'
     | '/newsletter-2'
+    | '/reset-password'
     | '/sitemap.xml'
     | '/termeni-si-conditii'
     | '/viziune'
@@ -828,6 +840,7 @@ export interface RootRouteChildren {
   MembruRoute: typeof MembruRoute
   MisiuneRoute: typeof MisiuneRoute
   Newsletter2Route: typeof Newsletter2Route
+  ResetPasswordRoute: typeof ResetPasswordRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermeniSiConditiiRoute: typeof TermeniSiConditiiRoute
   ViziuneRoute: typeof ViziuneRouteWithChildren
@@ -975,6 +988,13 @@ declare module '@tanstack/react-router' {
       path: '/newsletter-2'
       fullPath: '/newsletter-2'
       preLoaderRoute: typeof Newsletter2RouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sitemap.xml': {
@@ -1440,6 +1460,7 @@ const rootRouteChildren: RootRouteChildren = {
   MembruRoute: MembruRoute,
   MisiuneRoute: MisiuneRoute,
   Newsletter2Route: Newsletter2Route,
+  ResetPasswordRoute: ResetPasswordRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermeniSiConditiiRoute: TermeniSiConditiiRoute,
   ViziuneRoute: ViziuneRouteWithChildren,

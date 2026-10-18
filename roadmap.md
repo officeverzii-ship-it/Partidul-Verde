@@ -1,5 +1,8 @@
 # Roadmap
 
+- [x] Recuperare parolă: opțiune pe autentificare, pagină publică de resetare; solicitarea emailului acceptată și respingerea linkului absent verificate în browser
+- [ ] Verificarea schimbării parolei prin emailul real: necesită linkul primit de utilizator și actualizarea site-ului din Coolify
+
 - [x] Corectarea configurației conexiunii publice pentru Coolify; 11 teste trecute și Acasă, Articole, Filiale verificate cu date reale în preview
 - [ ] Reverificarea celor trei pagini pe Coolify: necesită actualizarea codului, corectarea adresei runtime invalide și redeploy pe hosting
 

@@ -1,9 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
+
 import { Layout } from "@/components/site/Layout";
 import { Field } from "@/components/site/Form";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -22,7 +23,7 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"in" | "up">("in");
+  const [mode, setMode] = useState<"in" | "up" | "forgot">("in");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [msg, setMsg] = useState<string | null>(null);
@@ -42,41 +43,48 @@ function AuthPage() {
     e.preventDefault();
     setBusy(true);
     setMsg(null);
-    if (mode === "in") {
+    if (mode === "forgot") {
+      try {
+        const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+          redirectTo: window.location.origin + "/reset-password",
+        });
+        setMsg(error ? "Linkul nu a putut fi trimis. Încearcă din nou mai târziu." : "Dacă există un cont cu această adresă, vei primi un email cu linkul pentru resetarea parolei. Verifică și folderul Spam.");
+      } catch {
+        setMsg("Nu ne putem conecta. Încearcă din nou.");
+      }
+    } else if (mode === "in") {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) setMsg("Email sau parolă incorecte.");
     } else {
       const { error } = await supabase.auth.signUp({
         email,
         password,
-        options: { emailRedirectTo: window.location.origin + "/admin" },
+        options: { emailRedirectTo: window.location.origin },
       });
       setMsg(error ? error.message : "Verifică emailul pentru a confirma contul.");
     }
     setBusy(false);
   };
 
-  const google = async () => {
-    const r = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin + "/auth" });
-    if (r.error) setMsg("Autentificarea Google a eșuat.");
-  };
-
   return (
+
+
     <Layout>
       <section className="mx-auto max-w-md px-6 py-16">
         <form onSubmit={submit} className="glass rounded-3xl p-8">
-          <h1 className="font-display text-3xl font-bold">{mode === "in" ? "Autentificare" : "Cont nou"}</h1>
+          <h1 className="font-display text-3xl font-bold">{mode === "in" ? "Autentificare" : mode === "forgot" ? "Recuperare parolă" : "Cont nou"}</h1>
           <p className="mt-2 text-sm text-foreground/60">Acces la panoul intern al partidului.</p>
           <div className="mt-6 space-y-4">
             <Field label="Email"><input type="email" required className="field" value={email} onChange={(e) => setEmail(e.currentTarget.value)} /></Field>
-            <Field label="Parolă"><input type="password" required minLength={8} className="field" value={password} onChange={(e) => setPassword(e.currentTarget.value)} /></Field>
+            {mode !== "forgot" && <Field label="Parolă"><input type="password" required minLength={8} className="field" value={password} onChange={(e) => setPassword(e.currentTarget.value)} /></Field>}
           </div>
-          <button disabled={busy} className="btn-brand mt-6 w-full py-3">{mode === "in" ? "Intră" : "Creează cont"}</button>
-          <button type="button" onClick={google} className="glass mt-3 w-full rounded-xl py-3 font-semibold">Continuă cu Google</button>
-          {msg && <p className="mt-4 text-sm text-accent">{msg}</p>}
-          <button type="button" onClick={() => setMode(mode === "in" ? "up" : "in")} className="mt-6 text-sm text-foreground/60 hover:text-foreground">
-            {mode === "in" ? "Nu ai cont? Creează unul" : "Ai deja cont? Intră"}
-          </button>
+          {mode === "in" && <Button type="button" variant="link" className="mt-2 px-0" onClick={() => { setMode("forgot"); setMsg(null); setPassword(""); }}>Ai uitat parola?</Button>}
+          <Button type="submit" disabled={busy} className="btn-brand mt-6 w-full py-3">{busy ? "Se procesează…" : mode === "in" ? "Intră" : mode === "forgot" ? "Trimite link de resetare" : "Creează cont"}</Button>
+          {msg && <p role="status" className="mt-4 text-sm text-foreground">{msg}</p>}
+
+          <Button type="button" variant="link" onClick={() => { setMode(mode === "in" ? "up" : "in"); setMsg(null); }} className="mt-6 px-0">
+            {mode === "in" ? "Nu ai cont? Creează unul" : "Înapoi la autentificare"}
+          </Button>
         </form>
       </section>
     </Layout>
