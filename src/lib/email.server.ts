@@ -2,7 +2,8 @@
 import { createPublicBackendClient } from './public-backend.server';
 
 const GATEWAY_URL = 'https://connector-gateway.lovable.dev/resend';
-export const SITE_URL = (import.meta.env['VITE_SITE_URL'] as string | undefined) ?? 'https://partidulverde.lovable.app';
+// Linkurile din emailuri duc mereu la site-ul public principal (nu la copia de rezervă).
+export const SITE_URL = (import.meta.env['VITE_SITE_URL'] as string | undefined) || 'https://partidulverde.duckdns.org';
 
 export type EmailSettings = { from_name: string; from_address: string };
 const DEFAULT_FROM: EmailSettings = { from_name: 'Partidul Verde', from_address: 'onboarding@resend.dev' };
